@@ -14,13 +14,14 @@ import java.util.*;
 public class CalendarView {
     
     private Student student;
-    private Stage stage;
-    private Set<String> newlyAddedCourses; // Track newly added courses
+    private Stage stage;	
+    private Set<String> newlyAddedCourses;
     
-    // Time slots from 7 AM to 10 PM
+    // Time slots from 7 AM to 7 PM in 30-minute intervals
     private static final String[] TIME_SLOTS = {
-        "7:00", "8:00", "9:00", "10:00", "11:00", "12:00",
-        "1:00", "2:00", "3:00", "4:00", "5:00", "6:00", "7:00", "8:00", "9:00", "10:00"
+        "7:00", "7:30", "8:00", "8:30", "9:00", "9:30", "10:00", "10:30",
+        "11:00", "11:30", "12:00", "12:30", "1:00", "1:30", "2:00", "2:30",
+        "3:00", "3:30", "4:00", "4:30", "5:00", "5:30", "6:00", "6:30", "7:00"
     };
     
     private static final String[] DAYS = {"Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"};
@@ -43,18 +44,15 @@ public class CalendarView {
         BorderPane root = new BorderPane();
         root.setStyle("-fx-background-color: #f5f5f5;");
         
-        // Top bar with title and buttons
         HBox topBar = createTopBar();
         root.setTop(topBar);
         
-        // Calendar grid
         ScrollPane scrollPane = new ScrollPane(createCalendarGrid());
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
         scrollPane.setStyle("-fx-background: #f5f5f5;");
         root.setCenter(scrollPane);
         
-        // Legend at bottom
         HBox legend = createLegend();
         root.setBottom(legend);
         
@@ -84,7 +82,7 @@ public class CalendarView {
             stage.setScene(scene);
         });
         
-        Label titleLabel = new Label("Weekly Schedule Calendar");
+        Label titleLabel = new Label("Weekly Schedule Calendar (7 AM - 7 PM)");
         titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;");
         
         Button enlistButton = new Button("Add/Remove Courses");
@@ -136,17 +134,17 @@ public class CalendarView {
         }
         
         // Time slots and cells
-        Map<String, Map<String, List<Course>>> schedule = organizeSchedule();
+        Map<String, Map<String, List<CourseTimeSlot>>> schedule = organizeSchedule();
         
         for (int timeIdx = 0; timeIdx < TIME_SLOTS.length; timeIdx++) {
             String time = TIME_SLOTS[timeIdx];
             
-            // Time label
+            // Time label - show only on the hour for cleaner display
             Label timeLabel = new Label(time);
-            timeLabel.setPrefSize(80, 60);
+            timeLabel.setPrefSize(80, 40);
             timeLabel.setAlignment(Pos.CENTER);
             timeLabel.setStyle("-fx-background-color: #ecf0f1; -fx-font-weight: bold; " +
-                             "-fx-border-color: #bdc3c7; -fx-border-width: 1px;");
+                             "-fx-border-color: #bdc3c7; -fx-border-width: 1px; -fx-font-size: 10px;");
             grid.add(timeLabel, 0, timeIdx + 1);
             
             // Day cells
@@ -160,8 +158,19 @@ public class CalendarView {
         return grid;
     }
     
-    private Map<String, Map<String, List<Course>>> organizeSchedule() {
-        Map<String, Map<String, List<Course>>> schedule = new HashMap<>();
+    // Inner class to hold course with its duration
+    private class CourseTimeSlot {
+        Course course;
+        int durationSlots; // how many 30-min slots this course spans
+        
+        CourseTimeSlot(Course course, int durationSlots) {
+            this.course = course;
+            this.durationSlots = durationSlots;
+        }
+    }
+    
+    private Map<String, Map<String, List<CourseTimeSlot>>> organizeSchedule() {
+        Map<String, Map<String, List<CourseTimeSlot>>> schedule = new HashMap<>();
         
         for (Course course : student.getCoursesTaken()) {
             String days = course.getDays();
@@ -174,13 +183,33 @@ public class CalendarView {
             // Parse days
             List<String> daysList = parseDays(days);
             
-            // Parse time to get start hour
+            // Parse time to get start time and duration
             String startTime = parseStartTime(time);
+            int duration = calculateDuration(time);
             
-            for (String day : daysList) {
-                schedule.putIfAbsent(day, new HashMap<>());
-                schedule.get(day).putIfAbsent(startTime, new ArrayList<>());
-                schedule.get(day).get(startTime).add(course);
+            if (startTime != null) {
+                // Find the index of the start time
+                int startIndex = -1;
+                for (int i = 0; i < TIME_SLOTS.length; i++) {
+                    if (TIME_SLOTS[i].equals(startTime)) {
+                        startIndex = i;
+                        break;
+                    }
+                }
+                
+                if (startIndex >= 0) {
+                    // Add course to all time slots it occupies
+                    for (String day : daysList) {
+                        schedule.putIfAbsent(day, new HashMap<>());
+                        
+                        // Add to all time slots the course spans
+                        for (int i = 0; i < duration && (startIndex + i) < TIME_SLOTS.length + 1; i++) {
+                            String timeSlot = TIME_SLOTS[startIndex + i];
+                            schedule.get(day).putIfAbsent(timeSlot, new ArrayList<>());
+                            schedule.get(day).get(timeSlot).add(new CourseTimeSlot(course, duration));
+                        }
+                    }
+                }
             }
         }
         
@@ -214,37 +243,77 @@ public class CalendarView {
     }
     
     private String parseStartTime(String time) {
-        // Extract start time from formats like "10:00-11:00" or "7:00-10:00"
+        // Extract start time from formats like "10:00-11:00" or "8:30-9:30"
         if (time.contains("-")) {
             String start = time.split("-")[0].trim();
-            // Normalize to just hour
-            if (start.contains(":")) {
-                String hour = start.split(":")[0];
-                return hour + ":00";
-            }
+            return start; // Return the full time including minutes
         }
         return time;
     }
     
-    private VBox createCell(String day, String time, Map<String, Map<String, List<Course>>> schedule) {
+    private int calculateDuration(String time) {
+        // Calculate duration in 30-minute slots INCLUDING the end time
+        if (!time.contains("-")) return 2; // Default 1 hour = 2 slots
+        
+        try {
+            String[] parts = time.split("-");
+            String startStr = parts[0].trim();
+            String endStr = parts[1].trim();
+            
+            int startMinutes = parseTimeToMinutes(startStr);
+            int endMinutes = parseTimeToMinutes(endStr);
+            
+            int durationMinutes = endMinutes - startMinutes;
+            int slots = durationMinutes / 30;
+            
+            
+            if (endMinutes % 30 == 0 && slots > 0) {
+                
+                return slots + 1;
+            }
+            
+            return slots;
+        } catch (Exception e) {
+            return 2; // Default 1 hour
+        }
+    }
+    
+    private int parseTimeToMinutes(String timeStr) {
+        // Parse time like "8:30" or "10:00" to minutes since midnight
+        String[] parts = timeStr.split(":");
+        int hour = Integer.parseInt(parts[0]);
+        int minute = parts.length > 1 ? Integer.parseInt(parts[1]) : 0;
+        
+        // Handle 12-hour format (assume PM for 1-7, AM for 7-11)
+        if (hour >= 1 && hour <= 7) {
+            hour += 12; // PM times
+        } else if (hour >= 7 && hour <= 11) {
+            // AM times - keep as is
+        }
+        
+        return hour * 60 + minute;
+    }
+    
+    private VBox createCell(String day, String time, Map<String, Map<String, List<CourseTimeSlot>>> schedule) {
         VBox cell = new VBox(3);
-        cell.setPrefSize(180, 60);
+        cell.setPrefSize(180, 40);
         cell.setAlignment(Pos.TOP_LEFT);
-        cell.setPadding(new Insets(5));
+        cell.setPadding(new Insets(3));
         cell.setStyle("-fx-background-color: white; -fx-border-color: #dfe6e9; -fx-border-width: 1px;");
         
         if (schedule.containsKey(day) && schedule.get(day).containsKey(time)) {
-            List<Course> courses = schedule.get(day).get(time);
+            List<CourseTimeSlot> courseSlots = schedule.get(day).get(time);
             
-            for (Course course : courses) {
+            for (CourseTimeSlot slot : courseSlots) {
+                Course course = slot.course;
                 String courseKey = course.getCourseID() + "-" + course.getSection();
                 boolean isNew = newlyAddedCourses.contains(courseKey);
                 
                 Label courseLabel = new Label(course.getCourseID() + " " + course.getSection());
                 courseLabel.setStyle(
-                    "-fx-font-size: 11px; " +
+                    "-fx-font-size: 10px; " +
                     "-fx-font-weight: bold; " +
-                    "-fx-padding: 3px 5px; " +
+                    "-fx-padding: 2px 4px; " +
                     "-fx-background-radius: 3px; " +
                     (isNew ? 
                         "-fx-background-color: #2ecc71; -fx-text-fill: white; " +
@@ -253,12 +322,18 @@ public class CalendarView {
                 );
                 
                 Label roomLabel = new Label(course.getRoom());
-                roomLabel.setStyle("-fx-font-size: 9px; -fx-text-fill: #7f8c8d;");
+                roomLabel.setStyle("-fx-font-size: 8px; -fx-text-fill: #7f8c8d;");
+                
+                // Add duration indicator if it spans multiple slots
+                String durationText = "";
+                if (slot.durationSlots > 2) {
+                    durationText = " (" + (slot.durationSlots * 30) + " min)";
+                }
                 
                 Tooltip tooltip = new Tooltip(
                     "Course: " + course.getTitle() + "\n" +
                     "Section: " + course.getSection() + "\n" +
-                    "Time: " + course.getTime() + "\n" +
+                    "Time: " + course.getTime() + durationText + "\n" +
                     "Room: " + course.getRoom() + "\n" +
                     (isNew ? "★ NEWLY ADDED" : "")
                 );
@@ -267,7 +342,7 @@ public class CalendarView {
                 cell.getChildren().addAll(courseLabel, roomLabel);
             }
             
-            if (!courses.isEmpty()) {
+            if (!courseSlots.isEmpty()) {
                 cell.setStyle("-fx-background-color: #ecf9ff; -fx-border-color: #3498db; -fx-border-width: 1px;");
             }
         }

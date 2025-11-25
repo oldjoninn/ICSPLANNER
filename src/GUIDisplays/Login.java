@@ -62,7 +62,8 @@ public class Login {
         txtPassword.getStyleClass().add("transparent-field");
         
         Button btnLogin = new Button("LOGIN");
-        btnLogin.setLayoutX(715);
+        // Center the button: 632 (field start) + 280 (field width) / 2 - 95 (button width) / 2
+        btnLogin.setLayoutX(632 + (280 - 95) / 2);
         btnLogin.setLayoutY(616);
         btnLogin.getStyleClass().add("diagonal-gradient-btn");
         

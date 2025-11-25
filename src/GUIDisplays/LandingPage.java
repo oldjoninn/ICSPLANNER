@@ -51,10 +51,11 @@ public class LandingPage {
         
         // Create Items
         VBox plannerItem = createDashboardItem("Planner", "/images/calendar_icon.png");
+        VBox calendarItem = createDashboardItem("Calendar", "/images/calendar_icon.png");
         VBox announcementsItem = createDashboardItem("Announcements", "/images/megaphone_icon.png");
         VBox exitItem = createDashboardItem("Exit", "/images/door_icon.png");
         
-        container.getChildren().addAll(plannerItem, announcementsItem, exitItem);
+        container.getChildren().addAll(plannerItem, calendarItem, announcementsItem, exitItem);
         
         // Logic Part
         // Link Planner Button -> EnlistmentUI
@@ -69,6 +70,15 @@ public class LandingPage {
                 System.out.println("CSS file not found, using default styles");
             }
             primaryStage.setScene(enlistmentScene);
+            primaryStage.setMaximized(true);
+        });
+        
+        // Link Calendar Button -> CalendarView
+        Button calendarBtn = (Button) calendarItem.getChildren().get(1);
+        calendarBtn.setOnAction(e -> {
+            CalendarView calendarView = new CalendarView(student, primaryStage);
+            Scene calendarScene = calendarView.createCalendarScene();
+            primaryStage.setScene(calendarScene);
             primaryStage.setMaximized(true);
         });
         

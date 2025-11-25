@@ -3,7 +3,6 @@ package components;
 import java.util.ArrayList;
 import application.CSVReader;
 
-
 public class DegreeProgram {
     private String name;
     private String csvFile;
@@ -20,7 +19,6 @@ public class DegreeProgram {
     public ArrayList<Course> getCoursesOffered() { return coursesOffered; }
     
     public void loadCourses() {
-       // coursesOffered = CSVReader.readProgramCourses(csvFile, name);
-        
+        coursesOffered = CSVReader.readProgramCourses(csvFile, name);
     }
 }

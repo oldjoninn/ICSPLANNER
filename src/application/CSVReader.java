@@ -4,6 +4,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import components.Course;
+
 public class CSVReader {
    public static ArrayList<Course> readProgramCourses(String csvPath, String programName) {
        ArrayList<Course> courses = new ArrayList<>();
@@ -11,7 +13,7 @@ public class CSVReader {
            String line;
            br.readLine();
            while ((line = br.readLine()) != null) {
-               String[] parts = line.split("\\\\\\\\");
+               String[] parts = line.split(",");
                if (parts.length >= 4) {
                    String courseCode = parts[0].trim();
                    String courseName = parts[1].trim();
@@ -26,17 +28,17 @@ public class CSVReader {
            System.err.println("Error reading course file: " + csvPath);
            e.printStackTrace();
        }
-      
        return courses;
    }
+   
    public static void readCourseOfferings(String csvPath, List<Course> courseOfferings) {
        try (BufferedReader br = new BufferedReader(new FileReader(csvPath))) {
            String line;
            br.readLine();
            br.readLine();
            while ((line = br.readLine()) != null) {
-               String[] parts = line.split("\\\\\\\\");
-               if (parts.length >= 8) {
+               String[] parts = line.split(",");
+               if (parts.length >= 7) {
                    String courseCode = parts[0].trim();
                    String courseTitle = parts[1].trim();
                    String units = parts[2].trim();
@@ -54,4 +56,3 @@ public class CSVReader {
        }
    }
 }
-

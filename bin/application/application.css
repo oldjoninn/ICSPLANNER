@@ -1,1 +1,90 @@
-/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+/* Main background for the StackPane */
+.root-pane {
+   -fx-background-color: linear-gradient(to bottom, #87CEEB, #4682B4);
+}
+.image-with-shadow {
+   -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 30, 0.15, 0, 0);
+}
+.main-login-btn {
+   -fx-background-color: transparent;
+   -fx-border-color: linear-gradient(from 0% 0% to 100% 100%, #73deff, #4973f1);
+   -fx-border-radius: 25px;
+   -fx-text-fill: linear-gradient(from 0% 0% to 100% 100%, #73deff, #4973f1);
+   -fx-font-size: 12px;
+   -fx-font-weight: bold;
+   -fx-padding: 3 5 3 5;
+   -fx-cursor: hand;
+   -fx-pref-width: 60px;
+   -fx-pref-height: 1px;
+}
+.welcome-text {
+   -fx-font-family: "Arial";
+   -fx-font-size: 40px;
+   -fx-font-weight: bold;
+   -fx-text-fill: #c4d0e6;
+   -fx-effect: dropshadow(gaussian, #1d223a, 10, 0.2, 0, 0);
+}
+.abbriev-text {
+   -fx-font-family: "Arial";
+   -fx-font-size: 20px;
+   -fx-text-fill: #c4d0e6;
+   /*-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 10, 0.5, 2, 2);*/
+}
+/* Title Text - Large and Bold */
+.title-text {
+   -fx-font-family: "Arial";
+   -fx-font-size: 33px;
+   -fx-font-weight: bold;
+   -fx-text-fill: #c4d0e6;
+   /*-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 10, 0.5, 2, 2);*/
+}
+.normal-login-text {
+   -fx-font-family: "Arial";
+   -fx-font-size: 12px;
+   -fx-text-fill: #c4d0e6;
+   /*-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 10, 0.5, 2, 2);*/
+}
+.error-text {
+   -fx-font-family: "Arial";
+   -fx-font-size: 12px;
+   -fx-text-fill: #a63c2e;
+   /*-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 10, 0.5, 2, 2);*/
+}
+.transparent-field {
+   -fx-background-color: transparent;
+   -fx-border-color: transparent transparent #5d6378 transparent;
+   -fx-border-width: 0.5px;
+   -fx-padding: 0 0 1px 0;
+   -fx-font-family: "Arial";
+   -fx-font-size: 14px;
+   -fx-text-fill: white;
+   -fx-pref-width: 280px;   
+   -fx-pref-height: 50px;
+}
+.transparent-field:focused {
+   -fx-border-color: transparent transparent #c2dfe8 transparent;
+   -fx-border-width: 0.5px;
+   -fx-effect: dropshadow(gaussian, #c2dfe8, 1, 0.5, 0, 0);
+}
+.diagonal-gradient-btn {
+   -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #73deff, #4973f1);
+   -fx-text-fill: #1d223a;
+   -fx-font-weight: bold;
+   -fx-font-size: 17px;
+   -fx-background-radius: 5px;
+   -fx-border-radius: 2px;
+   -fx-padding: 2 3 2 3;
+   -fx-pref-width: 95px;
+   -fx-pref-height: 15px;
+  	-fx-cursor: hand;
+}
+.hyperlink-btn {
+   -fx-background-color: transparent;
+   -fx-border-color: transparent transparent transparent transparent;
+   -fx-text-fill: #73deff;
+	-fx-underline: true;
+   -fx-font-size: 12px;
+   -fx-padding: 1 3 1 3;
+   -fx-cursor: hand;
+}
+

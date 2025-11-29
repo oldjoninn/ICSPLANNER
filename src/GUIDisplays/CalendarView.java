@@ -27,7 +27,7 @@ public class CalendarView {
     // Time labels for display (hourly ranges)
     private static final String[] TIME_LABELS = {
         "7:00-8:00", "8:00-9:00", "9:00-10:00", "10:00-11:00", "11:00-12:00", "12:00-1:00", 
-        "1:00-2:00", "2:00-3:00", "3:00-4:00", "4:00-5:00", "5:00-6:00", "6:00-7:00" };
+        "1:00-2:00", "2:00-3:00", "3:00-4:00", "4:00-5:00", "5:00-6:00", "6:00-7:00","7:00-8:00" };
     
     private static final String[] DAYS = {"Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"};
     
@@ -116,21 +116,21 @@ public class CalendarView {
     
     private GridPane createCalendarGrid() {
         GridPane grid = new GridPane();
-        grid.setHgap(2);
+        grid.setHgap(3);
         grid.setVgap(0);
         grid.setPadding(new Insets(10));
         grid.setStyle("-fx-background-color: #ffffff;");
         
         // Header row
         Label cornerLabel = new Label("Time");
-        cornerLabel.setPrefSize(80, 40);
+        cornerLabel.setPrefSize(100, 50);
         cornerLabel.setAlignment(Pos.CENTER);
         cornerLabel.setStyle("-fx-background-color: #34495e; -fx-text-fill: white; -fx-font-weight: bold;");
         grid.add(cornerLabel, 0, 0);
         
         for (int i = 0; i < DAYS.length; i++) {
             Label dayLabel = new Label(DAYS[i]);
-            dayLabel.setPrefSize(180, 40);
+            dayLabel.setPrefSize(220, 50);
             dayLabel.setAlignment(Pos.CENTER);
             dayLabel.setStyle("-fx-background-color: #34495e; -fx-text-fill: white; " +
                             "-fx-font-weight: bold; -fx-font-size: 14px;");
@@ -164,7 +164,7 @@ public class CalendarView {
                 int hourIndex = timeIdx / 2;
                 if (hourIndex < TIME_LABELS.length) {
                     Label timeLabel = new Label(TIME_LABELS[hourIndex]);
-                    timeLabel.setPrefSize(80, 60);
+                    timeLabel.setPrefSize(100, 80);
                     timeLabel.setAlignment(Pos.CENTER);
                     timeLabel.setStyle("-fx-background-color: #ecf0f1; -fx-font-weight: bold; " +
                                      "-fx-border-color: #bdc3c7; -fx-border-width: 1px; -fx-font-size: 11px;");
@@ -494,7 +494,7 @@ public class CalendarView {
         boolean isNew = newlyAddedCourses.contains(courseKey);
         
         VBox cell = new VBox(5);
-        cell.setPrefSize(180, 30 * slot.durationSlots); // 30 pixels per 30-min slot
+        cell.setPrefSize(220, 40 * slot.durationSlots);
         cell.setAlignment(Pos.TOP_LEFT);
         cell.setPadding(new Insets(8));
         
@@ -530,14 +530,7 @@ public class CalendarView {
             "-fx-text-fill: " + (isNew ? "#27ae60" : "#2980b9") + ";"
         );
         
-        // Section
-        Label sectionLabel = new Label("Section: " + course.getSection());
-        sectionLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #34495e;");
         
-        
-        // Room
-        Label roomLabel = new Label("📍 " + course.getRoom());
-        roomLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #7f8c8d;");
         
 
     
@@ -554,7 +547,7 @@ public class CalendarView {
             cell.getChildren().add(newBadge);
         }
         
-        cell.getChildren().addAll(courseLabel, sectionLabel, roomLabel);
+        cell.getChildren().addAll(courseLabel);
         
         // Tooltip with full details
         Tooltip tooltip = new Tooltip(
@@ -573,7 +566,7 @@ public class CalendarView {
     
     private VBox createEmptyCell(int height) {
         VBox cell = new VBox();
-        cell.setPrefSize(180, height);
+        cell.setPrefSize(220, height);
         cell.setStyle("-fx-background-color: white; -fx-border-color: #dfe6e9; -fx-border-width: 0.5px;");
         return cell;
     }

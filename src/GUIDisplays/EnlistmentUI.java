@@ -138,6 +138,14 @@ public class EnlistmentUI {
                             }
                             if (alreadyEnrolled) {
                                 showErrorPopup("", "You are already enrolled in " + selectedCourse.getCourseID());
+                            } else{
+                            	CalendarView tempCalendar = new CalendarView(student, primaryStage);
+                                if (tempCalendar.hasTimeConflict(selectedCourse)) {
+                                    showErrorPopup("Schedule Conflict", 
+                                        "Cannot add " + selectedCourse.getCourseID() + " " + selectedCourse.getSection() + 
+                                        "\n\nThis course conflicts with your existing schedule!" +
+                                        "\nTime: " + selectedCourse.getTime() + " (" + selectedCourse.getDays() + ")" +
+                                        "\n\nPlease choose a different section or remove the conflicting course first.");
                             } else {
                                 student.addCourse(selectedCourse);
                                 plannedCourses.add(selectedCourse);
@@ -148,6 +156,7 @@ public class EnlistmentUI {
                                     "\n\nClick 'View Calendar' to see your updated schedule!");
                             }
                         }
+                      }
                     });
                     setGraphic(addButton);
                 }

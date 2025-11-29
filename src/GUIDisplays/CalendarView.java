@@ -14,7 +14,7 @@ import java.util.*;
 public class CalendarView {
     
     private Student student;
-    private Stage stage;	
+    private Stage stage;
     private Set<String> newlyAddedCourses;
     
     // Time slots from 7 AM to 7 PM in 30-minute intervals
@@ -23,6 +23,11 @@ public class CalendarView {
         "11:00", "11:30", "12:00", "12:30", "1:00", "1:30", "2:00", "2:30",
         "3:00", "3:30", "4:00", "4:30", "5:00", "5:30", "6:00", "6:30", "7:00"
     };
+    
+    // Time labels for display (hourly ranges)
+    private static final String[] TIME_LABELS = {
+        "7:00-8:00", "8:00-9:00", "9:00-10:00", "10:00-11:00", "11:00-12:00", "12:00-1:00", 
+        "1:00-2:00", "2:00-3:00", "3:00-4:00", "4:00-5:00", "5:00-6:00", "6:00-7:00" };
     
     private static final String[] DAYS = {"Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"};
     
@@ -112,13 +117,12 @@ public class CalendarView {
     private GridPane createCalendarGrid() {
         GridPane grid = new GridPane();
         grid.setHgap(2);
-        grid.setVgap(2);
+        grid.setVgap(0);
         grid.setPadding(new Insets(10));
         grid.setStyle("-fx-background-color: #ffffff;");
         
-        // Header row (days)
+        // Header row
         Label cornerLabel = new Label("Time");
-        cornerLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 12px; -fx-padding: 10px;");
         cornerLabel.setPrefSize(80, 40);
         cornerLabel.setAlignment(Pos.CENTER);
         cornerLabel.setStyle("-fx-background-color: #34495e; -fx-text-fill: white; -fx-font-weight: bold;");
@@ -133,35 +137,91 @@ public class CalendarView {
             grid.add(dayLabel, i + 1, 0);
         }
         
-        // Time slots and cells
-        Map<String, Map<String, List<CourseTimeSlot>>> schedule = organizeSchedule();
+        // Organize schedule and detect collisions
+        Map<String, CourseTimeSlot> schedule = organizeSchedule();
+        Set<String> collisions = detectCollisions(schedule);
+        
+        // Display collision warnings
+        if (!collisions.isEmpty()) {
+            System.out.println("⚠️ SCHEDULE CONFLICTS DETECTED:");
+            for (String collision : collisions) {
+                System.out.println("  " + collision);
+            }
+        }
+        
+        // Track which cells have been filled (by day and time slot index)
+        Map<String, Set<Integer>> filledCells = new HashMap<>();
+        for (String day : DAYS) {
+            filledCells.put(day, new HashSet<>());
+        }
+        
+      
+        int gridRow = 1; // Start at row 1 (after header)
         
         for (int timeIdx = 0; timeIdx < TIME_SLOTS.length; timeIdx++) {
-            String time = TIME_SLOTS[timeIdx];
+            // Add time label for every hour (every 2 slots) - but DON'T increment gridRow for label
+            if (timeIdx % 2 == 0) {
+                int hourIndex = timeIdx / 2;
+                if (hourIndex < TIME_LABELS.length) {
+                    Label timeLabel = new Label(TIME_LABELS[hourIndex]);
+                    timeLabel.setPrefSize(80, 60);
+                    timeLabel.setAlignment(Pos.CENTER);
+                    timeLabel.setStyle("-fx-background-color: #ecf0f1; -fx-font-weight: bold; " +
+                                     "-fx-border-color: #bdc3c7; -fx-border-width: 1px; -fx-font-size: 11px;");
+                    grid.add(timeLabel, 0, gridRow);
+                    GridPane.setRowSpan(timeLabel, 2); // Span 2 grid rows for the hour
+                }
+            }
             
-            // Time label - show only on the hour for cleaner display
-            Label timeLabel = new Label(time);
-            timeLabel.setPrefSize(80, 40);
-            timeLabel.setAlignment(Pos.CENTER);
-            timeLabel.setStyle("-fx-background-color: #ecf0f1; -fx-font-weight: bold; " +
-                             "-fx-border-color: #bdc3c7; -fx-border-width: 1px; -fx-font-size: 10px;");
-            grid.add(timeLabel, 0, timeIdx + 1);
-            
-            // Day cells
+            // Process each day column
             for (int dayIdx = 0; dayIdx < DAYS.length; dayIdx++) {
                 String day = DAYS[dayIdx];
-                VBox cell = createCell(day, time, schedule);
-                grid.add(cell, dayIdx + 1, timeIdx + 1);
+                
+                // Skip if this time slot is already filled
+                if (filledCells.get(day).contains(timeIdx)) {
+                    continue;
+                }
+                
+                // Check if a course starts at this time slot
+                String dayTimeKey = day + "-" + timeIdx;
+                if (schedule.containsKey(dayTimeKey)) {
+                	CourseTimeSlot slot = schedule.get(dayTimeKey);
+                    System.out.println("DEBUG: Placing " + slot.course.getCourseID() + 
+                                      " at gridRow=" + gridRow + ", timeIdx=" + timeIdx + 
+                                      ", TIME_SLOTS[" + timeIdx + "]=" + TIME_SLOTS[timeIdx]);
+                    
+                    boolean hasCollision = collisions.contains(dayTimeKey);
+                    VBox cell = createMergedCell(slot, hasCollision);
+                    
+                    // Add the cell to the grid at the CORRECT row
+                    grid.add(cell, dayIdx + 1, gridRow);
+                    
+                    // Set row span based on duration
+                    GridPane.setRowSpan(cell, slot.durationSlots);
+                    
+                    // Mark all time slots this course occupies as filled
+                    for (int i = 0; i < slot.durationSlots; i++) {
+                        filledCells.get(day).add(timeIdx + i);
+                    }
+                } else {
+                    // Empty cell for this 30-min slot
+                    VBox emptyCell = createEmptyCell(30);
+                    grid.add(emptyCell, dayIdx + 1, gridRow);
+                }
             }
+            
+            gridRow++; // Increment grid row for EACH time slot
         }
         
         return grid;
     }
     
+
+
     // Inner class to hold course with its duration
     private class CourseTimeSlot {
         Course course;
-        int durationSlots; // how many 30-min slots this course spans
+        int durationSlots;
         
         CourseTimeSlot(Course course, int durationSlots) {
             this.course = course;
@@ -169,8 +229,8 @@ public class CalendarView {
         }
     }
     
-    private Map<String, Map<String, List<CourseTimeSlot>>> organizeSchedule() {
-        Map<String, Map<String, List<CourseTimeSlot>>> schedule = new HashMap<>();
+    private Map<String, CourseTimeSlot> organizeSchedule() {
+        Map<String, CourseTimeSlot> schedule = new HashMap<>();
         
         for (Course course : student.getCoursesTaken()) {
             String days = course.getDays();
@@ -198,15 +258,16 @@ public class CalendarView {
                 }
                 
                 if (startIndex >= 0) {
-                    // Add course to all time slots it occupies
+                    // Store course only at its start time with duration
                     for (String day : daysList) {
-                        schedule.putIfAbsent(day, new HashMap<>());
+                        String key = day + "-" + startIndex;
                         
-                        // Add to all time slots the course spans
-                        for (int i = 0; i < duration && (startIndex + i) < TIME_SLOTS.length + 1; i++) {
-                            String timeSlot = TIME_SLOTS[startIndex + i];
-                            schedule.get(day).putIfAbsent(timeSlot, new ArrayList<>());
-                            schedule.get(day).get(timeSlot).add(new CourseTimeSlot(course, duration));
+                        // Safety check: ensure duration is positive
+                        if (duration > 0 && duration <= TIME_SLOTS.length) {
+                            schedule.put(key, new CourseTimeSlot(course, duration));
+                        } else {
+                            System.out.println("WARNING: Invalid duration " + duration + " for course " + 
+                                             course.getCourseID() + " at " + startTime);
                         }
                     }
                 }
@@ -246,107 +307,274 @@ public class CalendarView {
         // Extract start time from formats like "10:00-11:00" or "8:30-9:30"
         if (time.contains("-")) {
             String start = time.split("-")[0].trim();
-            return start; // Return the full time including minutes
+            return start;
         }
         return time;
     }
     
     private int calculateDuration(String time) {
-        // Calculate duration in 30-minute slots INCLUDING the end time
-        if (!time.contains("-")) return 2; // Default 1 hour = 2 slots
+        if (!time.contains("-")) return 2;
         
         try {
             String[] parts = time.split("-");
+            if (parts.length != 2) {
+                System.out.println("WARNING: Invalid time format: " + time);
+                return 2;
+            }
+            
             String startStr = parts[0].trim();
             String endStr = parts[1].trim();
             
-            int startMinutes = parseTimeToMinutes(startStr);
-            int endMinutes = parseTimeToMinutes(endStr);
+            int startMinutes = parseTimeToMinutes(startStr, false); // false = start time
+            int endMinutes = parseTimeToMinutes(endStr, true);      // true = end time
             
             int durationMinutes = endMinutes - startMinutes;
+            
+            if (durationMinutes <= 0) {
+                System.out.println("WARNING: Invalid duration for time " + time + 
+                                 " (start=" + startMinutes + " min, end=" + endMinutes + " min)");
+                return 2;
+            }
+            
             int slots = durationMinutes / 30;
             
+            if (durationMinutes % 30 != 0) {
+                slots = (durationMinutes + 29) / 30; // Round up
+            }
             
-            if (endMinutes % 30 == 0 && slots > 0) {
-                
-                return slots + 1;
+            if (slots <= 0 || slots > TIME_SLOTS.length) {
+                System.out.println("WARNING: Calculated slots " + slots + " out of range for " + time);
+                return 2;
             }
             
             return slots;
+            
         } catch (Exception e) {
-            return 2; // Default 1 hour
+            System.out.println("ERROR parsing time: " + time);
+            e.printStackTrace();
+            return 2;
         }
     }
+
     
-    private int parseTimeToMinutes(String timeStr) {
+    private int parseTimeToMinutes(String timeStr, boolean isEndTime) {
         // Parse time like "8:30" or "10:00" to minutes since midnight
         String[] parts = timeStr.split(":");
         int hour = Integer.parseInt(parts[0]);
         int minute = parts.length > 1 ? Integer.parseInt(parts[1]) : 0;
         
-        // Handle 12-hour format (assume PM for 1-7, AM for 7-11)
-        if (hour >= 1 && hour <= 7) {
-            hour += 12; // PM times
-        } else if (hour >= 7 && hour <= 11) {
-            // AM times - keep as is
-        }
+        if (hour == 12) hour = 12; // Noon
+		else if (hour >= 1 && hour <= 6) hour += 12; // PM times after noon
+		else if (hour == 7) {
+			if (isEndTime) hour += 12; // 7 PM is 19:00
+		}
         
         return hour * 60 + minute;
     }
     
-    private VBox createCell(String day, String time, Map<String, Map<String, List<CourseTimeSlot>>> schedule) {
-        VBox cell = new VBox(3);
-        cell.setPrefSize(180, 40);
-        cell.setAlignment(Pos.TOP_LEFT);
-        cell.setPadding(new Insets(3));
-        cell.setStyle("-fx-background-color: white; -fx-border-color: #dfe6e9; -fx-border-width: 1px;");
+    private Set<String> detectCollisions(Map<String, CourseTimeSlot> schedule) {
+        Set<String> collisions = new HashSet<>();
         
-        if (schedule.containsKey(day) && schedule.get(day).containsKey(time)) {
-            List<CourseTimeSlot> courseSlots = schedule.get(day).get(time);
+        // For each day, check for overlapping courses
+        for (String day : DAYS) {
+            List<CourseTimeSlot> dayCourses = new ArrayList<>();
+            List<Integer> startIndices = new ArrayList<>();
             
-            for (CourseTimeSlot slot : courseSlots) {
-                Course course = slot.course;
-                String courseKey = course.getCourseID() + "-" + course.getSection();
-                boolean isNew = newlyAddedCourses.contains(courseKey);
-                
-                Label courseLabel = new Label(course.getCourseID() + " " + course.getSection());
-                courseLabel.setStyle(
-                    "-fx-font-size: 10px; " +
-                    "-fx-font-weight: bold; " +
-                    "-fx-padding: 2px 4px; " +
-                    "-fx-background-radius: 3px; " +
-                    (isNew ? 
-                        "-fx-background-color: #2ecc71; -fx-text-fill: white; " +
-                        "-fx-effect: dropshadow(gaussian, rgba(46,204,113,0.6), 5, 0.5, 0, 0);" :
-                        "-fx-background-color: #3498db; -fx-text-fill: white;")
-                );
-                
-                Label roomLabel = new Label(course.getRoom());
-                roomLabel.setStyle("-fx-font-size: 8px; -fx-text-fill: #7f8c8d;");
-                
-                // Add duration indicator if it spans multiple slots
-                String durationText = "";
-                if (slot.durationSlots > 2) {
-                    durationText = " (" + (slot.durationSlots * 30) + " min)";
+            // Collect all courses for this day
+            for (Map.Entry<String, CourseTimeSlot> entry : schedule.entrySet()) {
+                String key = entry.getKey();
+                if (key.startsWith(day + "-")) {
+                    int startIdx = Integer.parseInt(key.substring(key.indexOf("-") + 1));
+                    dayCourses.add(entry.getValue());
+                    startIndices.add(startIdx);
                 }
-                
-                Tooltip tooltip = new Tooltip(
-                    "Course: " + course.getTitle() + "\n" +
-                    "Section: " + course.getSection() + "\n" +
-                    "Time: " + course.getTime() + durationText + "\n" +
-                    "Room: " + course.getRoom() + "\n" +
-                    (isNew ? "★ NEWLY ADDED" : "")
-                );
-                Tooltip.install(courseLabel, tooltip);
-                
-                cell.getChildren().addAll(courseLabel, roomLabel);
             }
             
-            if (!courseSlots.isEmpty()) {
-                cell.setStyle("-fx-background-color: #ecf9ff; -fx-border-color: #3498db; -fx-border-width: 1px;");
+            // Check for overlaps between all pairs of courses on this day
+            for (int i = 0; i < dayCourses.size(); i++) {
+                int start1 = startIndices.get(i);
+                int end1 = start1 + dayCourses.get(i).durationSlots;
+                
+                for (int j = i + 1; j < dayCourses.size(); j++) {
+                    int start2 = startIndices.get(j);
+                    int end2 = start2 + dayCourses.get(j).durationSlots;
+                    
+
+                    boolean overlaps = (start1 < end2) && (start2 < end1);
+                    
+                    if (overlaps) {
+                        Course c1 = dayCourses.get(i).course;
+                        Course c2 = dayCourses.get(j).course;
+                        
+                        String collision = "⚠️ CONFLICT on " + day + ": " +
+                                         c1.getCourseID() + " " + c1.getSection() + " (" + c1.getTime() + ") " +
+                                         "overlaps with " +
+                                         c2.getCourseID() + " " + c2.getSection() + " (" + c2.getTime() + ")";
+                        
+                        System.out.println(collision);
+                        collisions.add(day + "-" + start1);
+                        collisions.add(day + "-" + start2);               
+                    }
+                }
             }
         }
         
+        return collisions;
+    }
+    
+    public boolean hasTimeConflict(Course newCourse) {
+        String newDays = newCourse.getDays();
+        String newTime = newCourse.getTime();
+        
+        if (newDays == null || newTime == null || newDays.equals("TBA") || newTime.equals("TBA")) {
+            return false; // TBA courses don't conflict
+        }
+        
+        List<String> newDaysList = parseDays(newDays);
+        String newStartTime = parseStartTime(newTime);
+        int newDuration = calculateDuration(newTime);
+        
+        int newStartIndex = -1;
+        for (int i = 0; i < TIME_SLOTS.length; i++) {
+            if (TIME_SLOTS[i].equals(newStartTime)) {
+                newStartIndex = i;
+                break;
+            }
+        }
+        
+        if (newStartIndex < 0) return false;
+        
+        int newEndIndex = newStartIndex + newDuration;
+        
+        // Check against all existing courses
+        for (Course existing : student.getCoursesTaken()) {
+            String existingDays = existing.getDays();
+            String existingTime = existing.getTime();
+            
+            if (existingDays == null || existingTime == null || 
+                existingDays.equals("TBA") || existingTime.equals("TBA")) {
+                continue;
+            }
+            
+            List<String> existingDaysList = parseDays(existingDays);
+            String existingStartTime = parseStartTime(existingTime);
+            int existingDuration = calculateDuration(existingTime);
+            
+            int existingStartIndex = -1;
+            for (int i = 0; i < TIME_SLOTS.length; i++) {
+                if (TIME_SLOTS[i].equals(existingStartTime)) {
+                    existingStartIndex = i;
+                    break;
+                }
+            }
+            
+            if (existingStartIndex < 0) continue;
+            
+            int existingEndIndex = existingStartIndex + existingDuration;
+            
+            // Check if they share any day
+            for (String newDay : newDaysList) {
+                if (existingDaysList.contains(newDay)) {
+                    // Same day - check time overlap
+                    if (newStartIndex < existingEndIndex && existingStartIndex < newEndIndex) {
+                        return true; // CONFLICT FOUND
+                    }
+                }
+            }
+        }
+        
+        return false; // No conflicts
+    }
+
+
+    
+    private VBox createMergedCell(CourseTimeSlot slot, boolean hasCollision) {
+        Course course = slot.course;
+        String courseKey = course.getCourseID() + "-" + course.getSection();
+        boolean isNew = newlyAddedCourses.contains(courseKey);
+        
+        VBox cell = new VBox(5);
+        cell.setPrefSize(180, 30 * slot.durationSlots); // 30 pixels per 30-min slot
+        cell.setAlignment(Pos.TOP_LEFT);
+        cell.setPadding(new Insets(8));
+        
+        // Different styling for collisions
+        String borderColor = hasCollision ? "#e74c3c" : (isNew ? "#2ecc71" : "#3498db");
+        String bgColor = hasCollision ? "#fadbd8" : (isNew ? "#d5f4e6" : "#ecf9ff");
+        
+        cell.setStyle(
+            "-fx-border-color: " + borderColor + "; " +
+            "-fx-border-width: " + (hasCollision ? "3px" : "2px") + "; " +
+            "-fx-background-color: " + bgColor + ";"
+        );
+        
+        // Collision warning badge
+        if (hasCollision) {
+            Label collisionBadge = new Label("⚠️ CONFLICT");
+            collisionBadge.setStyle(
+                "-fx-font-size: 9px; " +
+                "-fx-text-fill: white; " +
+                "-fx-background-color: #e74c3c; " +
+                "-fx-padding: 2px 5px; " +
+                "-fx-background-radius: 3px; " +
+                "-fx-font-weight: bold;"
+            );
+            cell.getChildren().add(collisionBadge);
+        }
+        
+        // Course Code (large and bold)
+        Label courseLabel = new Label(course.getCourseID());
+        courseLabel.setStyle(
+            "-fx-font-size: 14px; " +
+            "-fx-font-weight: bold; " +
+            "-fx-text-fill: " + (isNew ? "#27ae60" : "#2980b9") + ";"
+        );
+        
+        // Section
+        Label sectionLabel = new Label("Section: " + course.getSection());
+        sectionLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #34495e;");
+        
+        
+        // Room
+        Label roomLabel = new Label("📍 " + course.getRoom());
+        roomLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #7f8c8d;");
+        
+
+    
+        // Add visual indicator for newly added courses
+        if (isNew) {
+            Label newBadge = new Label("★ NEW");
+            newBadge.setStyle(
+                "-fx-font-size: 9px; " +
+                "-fx-text-fill: white; " +
+                "-fx-background-color: #2ecc71; " +
+                "-fx-padding: 2px 5px; " +
+                "-fx-background-radius: 3px;"
+            );
+            cell.getChildren().add(newBadge);
+        }
+        
+        cell.getChildren().addAll(courseLabel, sectionLabel, roomLabel);
+        
+        // Tooltip with full details
+        Tooltip tooltip = new Tooltip(
+            "Course: " + course.getTitle() + "\n" +
+            "Code: " + course.getCourseID() + "\n" +
+            "Section: " + course.getSection() + "\n" +
+            "Time: " + course.getTime() + "\n" +
+            "Room: " + course.getRoom() + "\n" +
+            "Duration: " + (slot.durationSlots * 30) + " minutes" +
+            (isNew ? "\n★ NEWLY ADDED" : "")
+        );
+        Tooltip.install(cell, tooltip);
+        
+        return cell;
+    }
+    
+    private VBox createEmptyCell(int height) {
+        VBox cell = new VBox();
+        cell.setPrefSize(180, height);
+        cell.setStyle("-fx-background-color: white; -fx-border-color: #dfe6e9; -fx-border-width: 0.5px;");
         return cell;
     }
     
@@ -359,8 +587,8 @@ public class CalendarView {
         Label legendTitle = new Label("Legend:");
         legendTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
         
-        HBox regularItem = createLegendItem("#3498db", "Regular Course");
-        HBox newItem = createLegendItem("#2ecc71", "Newly Added Course");
+        HBox regularItem = createLegendItem("#ecf9ff", "Regular Course");
+        HBox newItem = createLegendItem("#d5f4e6", "Newly Added Course");
         HBox emptyItem = createLegendItem("white", "Free Time");
         
         legend.getChildren().addAll(legendTitle, regularItem, newItem, emptyItem);

@@ -50,7 +50,7 @@ public class LandingPage {
         container.setAlignment(Pos.CENTER);
         
         // Create Items
-        VBox plannerItem = createDashboardItem("Planner", "/images/calendar_icon.png");
+        VBox plannerItem = createDashboardItem("Planner", "/images/planner_icon.png");
         VBox calendarItem = createDashboardItem("Calendar", "/images/calendar_icon.png");
         VBox announcementsItem = createDashboardItem("Announcements", "/images/megaphone_icon.png");
         VBox exitItem = createDashboardItem("Exit", "/images/door_icon.png");

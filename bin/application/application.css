@@ -1,17 +1,16 @@
+/* filepath: c:\Users\Ralph\OneDrive\Documents\coding files\CMSC 22\ICSPlanner\src\application\application.css */
 /* Main background for the StackPane */
 .root-pane {
    -fx-background-color: linear-gradient(to bottom, #87CEEB, #4682B4);
 }
-
 .image-with-shadow {
    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 30, 0.15, 0, 0);
 }
-
 .main-login-btn {
    -fx-background-color: transparent;
-   -fx-border-color: #73deff;
+   -fx-border-color: linear-gradient(from 0% 0% to 100% 100%, #73deff, #4973f1);
    -fx-border-radius: 25px;
-   -fx-text-fill: #73deff;
+   -fx-text-fill: linear-gradient(from 0% 0% to 100% 100%, #73deff, #4973f1);
    -fx-font-size: 12px;
    -fx-font-weight: bold;
    -fx-padding: 3 5 3 5;
@@ -19,7 +18,6 @@
    -fx-pref-width: 60px;
    -fx-pref-height: 1px;
 }
-
 .main-btns {
    -fx-background-color: transparent;
    -fx-border-color: transparent transparent transparent transparent;
@@ -34,8 +32,7 @@
 .sparkle {
    -fx-fill: white;
    -fx-effect: dropshadow(gaussian, #a8eaff, 10, 0.8, 0, 0);
-   }
-
+}
 .welcome-text {
    -fx-font-family: "Arial";
    -fx-font-size: 40px;
@@ -43,37 +40,35 @@
    -fx-text-fill: #c4d0e6;
    -fx-effect: dropshadow(gaussian, #1d223a, 10, 0.2, 0, 0);
 }
-
 .thin-rectangle {
     -fx-fill: linear-gradient(to right, transparent, #6683b8, #abc3ef, #6683b8, transparent);
 }
-
 .abbriev-text {
    -fx-font-family: "Arial";
    -fx-font-size: 20px;
    -fx-text-fill: #c4d0e6;
+   /*-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 10, 0.5, 2, 2);*/
 }
-
 /* Title Text - Large and Bold */
 .title-text {
    -fx-font-family: "Arial";
    -fx-font-size: 33px;
    -fx-font-weight: bold;
    -fx-text-fill: #c4d0e6;
+   /*-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 10, 0.5, 2, 2);*/
 }
-
 .normal-login-text {
    -fx-font-family: "Arial";
    -fx-font-size: 12px;
    -fx-text-fill: #c4d0e6;
+   /*-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 10, 0.5, 2, 2);*/
 }
-
 .error-text {
    -fx-font-family: "Arial";
    -fx-font-size: 12px;
    -fx-text-fill: #a63c2e;
+   /*-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 10, 0.5, 2, 2);*/
 }
-
 .transparent-field {
    -fx-background-color: transparent;
    -fx-border-color: transparent transparent #5d6378 transparent;
@@ -100,7 +95,7 @@
    -fx-padding: 2 3 2 3;
    -fx-pref-width: 95px;
    -fx-pref-height: 15px;
-  	-fx-cursor: hand;
+   	-fx-cursor: hand;
 }
 .hyperlink-btn {
    -fx-background-color: transparent;
@@ -132,7 +127,7 @@
 .combo-box .list-cell {
    -fx-background-color: #1d223a;
    -fx-text-fill: white;
-   -fx-pref-width: 260px;
+   -fx-pref-width: 262px;
 }
 .combo-box .list-view {
    -fx-background-color: #1d223a;
@@ -146,43 +141,21 @@
 .combo-box .arrow {
    -fx-background-color: #1d223a;
 }
-
-
-
-/* Dashboard Styles */
-.main-background {
-   -fx-background-color: linear-gradient(to bottom, #1e3c72, #2a5298);
-}
-
-.header-bar {
-   -fx-background-color: rgba(0, 0, 0, 0.3);
-}
-
-.header-icon {
-   -fx-font-size: 30px;
-   -fx-text-fill: white;
-   -fx-cursor: hand;
-}
-
-.icon-box {
-   -fx-background-color: white;
-   -fx-background-radius: 15px;
-   -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 20, 0.3, 0, 5);
-}
-
-.dashboard-btn {
-   -fx-background-color: linear-gradient(to bottom right, #73deff, #4973f1);
-   -fx-text-fill: white;
+.close-button {
+   -fx-background-color: rgba(255, 255, 255, 0.1);
+   -fx-text-fill: #ffffff;
+   -fx-font-size: 12px;
    -fx-font-weight: bold;
-   -fx-font-size: 16px;
-   -fx-background-radius: 10px;
+   -fx-border-radius: 100px;
+   -fx-background-radius: 100px;
+   -fx-pref-width: 30px;
+   -fx-pref-height: 30px;
    -fx-cursor: hand;
-   -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.2, 0, 3);
 }
-
-.dashboard-btn:hover {
-   -fx-background-color: linear-gradient(to bottom right, #5ac8f0, #3a5fd1);
-   -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 15, 0.3, 0, 5);
-   -fx-scale-y: 1.05;
-   -fx-scale-x: 1.05;
+.close-button:hover {
+   -fx-background-color: rgba(255, 255, 255, 0.2);
+   -fx-text-fill: #73deff;
+}
+.close-button:pressed {
+   -fx-background-color: rgba(255, 68, 68, 0.3);
 }

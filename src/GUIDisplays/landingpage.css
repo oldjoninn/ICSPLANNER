@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+
+/* ... existing styles ... */
+
+
+.title-text {
+    -fx-text-fill: white;
+    -fx-font-size: 56px;
+    -fx-font-weight: 700;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 5, 0, 0, 0);
+}
+
+
+.title-text-flow {
+    -fx-fill: white;
+    -fx-font-size: 56px;
+    -fx-font-weight: 700;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 5, 0, 0, 0);
+}
+
+
+.highlight-text {
+    -fx-fill: #64b5f6; /* Blue Color */
+}
+
+
+.subtitle-text {
+    -fx-text-fill: rgba(255, 255, 255, 0.7);
+    -fx-font-size: 16px;
+    -fx-font-weight: 300;
+}
+
+
+.announcements-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-border-color: white;
+    -fx-border-radius: 30px;
+    -fx-background-radius: 30px;
+    -fx-padding: 12px 40px;
+    -fx-font-size: 18px;
+    -fx-cursor: hand;
+}
+.announcements-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+}
+
+
+.image-button {
+    -fx-cursor: hand;
+    -fx-background-color: transparent;
+}
+.image-button:hover {
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.3), 10, 0, 0, 0);
+}
+

@@ -1,9 +1,11 @@
 package components;
 
 import java.util.ArrayList;
+import java.io.Serializable;
 import application.CSVReader;
 
-public class DegreeProgram {
+public class DegreeProgram implements Serializable {
+	private static final long serialVersionUID = 1L;
     private String name;
     private String csvFile;
     private ArrayList<Course> coursesOffered;

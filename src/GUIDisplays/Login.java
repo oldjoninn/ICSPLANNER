@@ -1,145 +1,152 @@
 package GUIDisplays;
-import javafx.util.Duration;
+import components.DegreeProgram;
+import application.Main;
+import components.Save_Load;
+import components.Student;
 import javafx.animation.FadeTransition;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import components.Student;
-import components.Admin;
-import components.DegreeProgram;
-import application.Main;
-
+import javafx.util.Duration;
 public class Login {
+   private Main mainApp;
+  
+   public Login() {}
+  
+   public Login(Main mainApp) {
+       this.mainApp = mainApp;
+   }
+  
+   public void displayLogInPopUp(Pane root, Stage primaryStage) {
+       Pane positionedContainer = new Pane();
+     
+       ImageView topImage = new ImageView();
+       try {
+           Image topImg = new Image(getClass().getResourceAsStream("/images/LoginPopUp.png"));
+           topImage.setImage(topImg);
+           topImage.setPreserveRatio(true);
+           topImage.setFitWidth(875);
+           topImage.getStyleClass().add("image-with-shadow");
+          
+           // Close Button
+           Button closeButton = new Button("X");
+           closeButton.getStyleClass().add("close-button");
+           closeButton.setLayoutX(topImage.getFitWidth() - 30);
+           closeButton.setLayoutY(10);
+           closeButton.setOnAction(e -> {
+               root.getChildren().remove(positionedContainer);
+               if (mainApp != null) mainApp.restoreMainDisplay(root);
+           });
+           positionedContainer.getChildren().add(closeButton);
+          
+       } catch (Exception e) {
+           System.err.println("Top image not found");
+       }
+     
+       Label loginText = new Label("Login to continue.");
+       loginText.getStyleClass().add("title-text");
+       loginText.setLayoutX(635);
+       loginText.setLayoutY(370);
     
-    public Login() {
-        
-    }
+       Label email = new Label("email");
+       email.getStyleClass().add("normal-login-text");
+       email.setLayoutX(637);
+       email.setLayoutY(430);
     
-    public void displayLogInPopUp(Pane root, Stage primaryStage) {
-        
-        Pane positionedContainer = new Pane();
-        
-        ImageView topImage = new ImageView();
-        try {
-            Image topImg = new Image(getClass().getResourceAsStream("/images/LoginPopUp.png"));
-            topImage.setImage(topImg);
-            topImage.setPreserveRatio(true);
-            topImage.setFitWidth(875);
-            topImage.getStyleClass().add("image-with-shadow");
-        } catch (Exception e) {
-            System.err.println("Top image not found");
-        }
-        
-        Label loginText = new Label("Login to continue.");
-        loginText.getStyleClass().add("title-text");
-        loginText.setLayoutX(630);
-        loginText.setLayoutY(340);
-        
-        Label email = new Label("email");
-        email.getStyleClass().add("normal-login-text");
-        email.setLayoutX(632);
-        email.setLayoutY(400);
-        
-        Label password = new Label("password");
-        password.getStyleClass().add("normal-login-text");
-        password.setLayoutX(632);
-        password.setLayoutY(485);
-        
-        TextField txtEmail = new TextField();
-        PasswordField txtPassword = new PasswordField();
-        txtEmail.setLayoutX(632);
-        txtEmail.setLayoutY(415);
-        txtPassword.setLayoutX(632);
-        txtPassword.setLayoutY(500);
-        
-        txtEmail.getStyleClass().add("transparent-field");
-        txtPassword.getStyleClass().add("transparent-field");
-        
-        Button btnLogin = new Button("LOGIN");
-        // Center the button: 632 (field start) + 280 (field width) / 2 - 95 (button width) / 2
-        btnLogin.setLayoutX(632 + (280 - 95) / 2);
-        btnLogin.setLayoutY(616);
-        btnLogin.getStyleClass().add("diagonal-gradient-btn");
-        
-        Label dhaaText = new Label("Don't have an account?");
-        dhaaText.getStyleClass().add("normal-login-text");
-        dhaaText.setLayoutX(665);
-        dhaaText.setLayoutY(694);
-        
-        Button register = new Button("Register now.");
-        register.setLayoutX(785);
-        register.setLayoutY(691);
-        register.getStyleClass().add("hyperlink-btn");
-        
-        positionedContainer.getChildren().addAll(topImage, loginText, email, password, txtEmail, txtPassword, btnLogin, dhaaText, register);
-        
-        root.getChildren().add(positionedContainer);
-        
-        // Set initial state (invisible)
-        positionedContainer.setOpacity(0);
-        
-        // Create fade in animation
-        FadeTransition fadeIn = new FadeTransition(Duration.millis(500), positionedContainer);
-        fadeIn.setFromValue(0);
-        fadeIn.setToValue(1);
-        fadeIn.play();
-        
-        Label incorrectText = new Label("Incorrect email or password.");
-        incorrectText.getStyleClass().add("error-text");
-        incorrectText.setLayoutX(631);
-        incorrectText.setLayoutY(560);
-        incorrectText.setVisible(false);
-        
-        btnLogin.disableProperty().bind(
-            txtEmail.textProperty().isEmpty()
-                .or(txtPassword.textProperty().isEmpty())
-        );
-        
-        btnLogin.setOnAction(e -> {
-            String enteredEmail = txtEmail.getText();
-            String enteredPassword = txtPassword.getText();
-            
-            // Check for admin login
-            if (enteredEmail.equals("admin") && enteredPassword.equals("admin123")) {
-                // Navigate to Admin Dashboard
-                Admin admin = new Admin();
-                AdminDashboard adminDashboard = new AdminDashboard(primaryStage, Main.courseOfferings);
-                adminDashboard.show();
-            }
-            // Check for student login (hardcoded for demo)
-            else if (enteredEmail.equals("hanna") && enteredPassword.equals("123")) {
-                // Create a student object (using BSCS as default degree program)
-                DegreeProgram bscs = Main.degreePrograms.get("BSCS");
-                Student student = new Student(
-                    enteredEmail,
-                    enteredPassword,
-                    "Hanna",
-                    "Student",
-                    enteredEmail + "@up.edu.ph",
-                    "2021-12345",
-                    bscs
-                );
-                
-                // Navigate to Landing Page
-                root.getChildren().clear();
-                root.getStyleClass().clear();
-                LandingPage landingPage = new LandingPage();
-                landingPage.displayaDashboard(root, primaryStage, student);
-                
-            } else {
-                // Show error
-                positionedContainer.getChildren().add(incorrectText);
-                incorrectText.setVisible(true);
-            }
-        });
-        
-        topImage.setLayoutX((root.getWidth() - topImage.getFitWidth()) / 2);
-        topImage.setLayoutY(280);
-    }
+       Label password = new Label("password");
+       password.getStyleClass().add("normal-login-text");
+       password.setLayoutX(637);
+       password.setLayoutY(515);
+     
+       TextField txtEmail = new TextField();
+       PasswordField txtPassword = new PasswordField();
+       txtEmail.setLayoutX(637);
+       txtEmail.setLayoutY(445);
+       txtPassword.setLayoutX(637);
+       txtPassword.setLayoutY(530);
+     
+       txtEmail.getStyleClass().add("transparent-field");
+       txtPassword.getStyleClass().add("transparent-field");
+     
+       Button btnLogin = new Button("LOGIN");
+       btnLogin.setLayoutX(720);
+       btnLogin.setLayoutY(646);
+       btnLogin.getStyleClass().add("diagonal-gradient-btn");
+      
+       Label dhaaText = new Label("Dont have an acount?");
+       dhaaText.getStyleClass().add("normal-login-text");
+       dhaaText.setLayoutX(670);
+       dhaaText.setLayoutY(724);
+    
+       Button register = new Button("Register now.");
+       register.setLayoutX(790);
+       register.setLayoutY(721);
+       register.getStyleClass().add("hyperlink-btn");
+      
+       positionedContainer.getChildren().addAll(
+           topImage, loginText, email, password, txtEmail, txtPassword,
+           btnLogin, dhaaText, register
+       );
+     
+       root.getChildren().add(positionedContainer);
+       positionedContainer.setOpacity(0);
+       FadeTransition fadeIn = new FadeTransition(Duration.millis(500), positionedContainer);
+       fadeIn.setFromValue(0); fadeIn.setToValue(1); fadeIn.play();
+     
+       Label incorrectText = new Label("Incorrect email or password.");
+       incorrectText.getStyleClass().add("error-text");
+       incorrectText.setLayoutX(637);
+       incorrectText.setLayoutY(585);
+       incorrectText.setVisible(false);
+     
+       btnLogin.disableProperty().bind(txtEmail.textProperty().isEmpty().or(txtPassword.textProperty().isEmpty()));
+    
+       register.setOnAction(e -> {
+           positionedContainer.getChildren().removeAll(loginText, email, password, txtEmail, txtPassword, btnLogin, dhaaText, register, incorrectText);
+           Register registerDisplay = new Register(mainApp);
+           registerDisplay.displayRegisterPopUp(positionedContainer, root, primaryStage);
+       });
+    
+       btnLogin.setOnAction(e -> {
+           String username = txtEmail.getText();
+           String passwordLogin = txtPassword.getText();
+           //Admin
+           if (username.equals("admin") && passwordLogin.equals("admin123")) {
+               AdminDashboard adminDash = new AdminDashboard(primaryStage, Main.courseOfferings);
+               adminDash.show();
+               root.getChildren().remove(positionedContainer);
+               return;
+           }
+           //Student
+           Student student = Save_Load.loadStudent(username);
+           if (student != null && student.getPassword().equals(passwordLogin)) {
+              
+               // Load Degree
+               DegreeProgram degree = student.getDegree();
+               if (degree != null && degree.getCoursesOffered().isEmpty()) {
+                   degree.loadCourses();
+               }
+               root.getChildren().remove(positionedContainer);
+               if (mainApp != null) {
+                   mainApp.setLogin(true, student);
+               }
+              
+              
+               primaryStage.setMaximized(true);
+              
+           } else {
+               if (!positionedContainer.getChildren().contains(incorrectText)) {
+                   positionedContainer.getChildren().add(incorrectText);
+               }
+               incorrectText.setVisible(true);
+           }
+       });
+    
+       topImage.setLayoutX(((root.getWidth() - topImage.getFitWidth()) / 2)+5);
+       topImage.setLayoutY(310);
+   }
 }
+
+

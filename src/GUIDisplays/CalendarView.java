@@ -77,7 +77,7 @@ public class CalendarView {
         backButton.setOnAction(e -> {
             Pane mainRoot = new Pane();
             LandingPage landingPage = new LandingPage();
-            landingPage.displayaDashboard(mainRoot, stage, student);
+            landingPage.displayLandingPage(mainRoot, stage);
             Scene scene = new Scene(mainRoot, 1200, 700);
             try {
                 scene.getStylesheets().add(getClass().getResource("/application/application.css").toExternalForm());

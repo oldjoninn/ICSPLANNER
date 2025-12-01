@@ -1,0 +1,94 @@
+package GUIDisplays;
+import components.Admin;
+import components.Student;
+import components.User;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
+public class Dashboard {
+   private final double width;
+   private final double height;
+   private User currentUser;
+   public Dashboard(double width, double height, User user) {
+       this.width = width;
+       this.height = height;
+       this.currentUser = user;
+   }
+   public Pane getView() {
+       Pane root = new Pane();
+       root.setPrefSize(width, height);
+      
+       root.setStyle("-fx-background-color: #050816;");
+      
+       Rectangle solidBg = new Rectangle();
+       solidBg.setWidth(width);
+       solidBg.heightProperty().bind(root.heightProperty());
+       solidBg.setFill(Color.web("#050816"));
+      
+       ImageView logoView = new ImageView();
+       try {
+           Image logoImage = new Image(getClass().getResourceAsStream("/images/REGICSLogo.png"));
+           logoView.setImage(logoImage);
+           logoView.setFitHeight(40);
+           logoView.setPreserveRatio(true);
+       } catch (Exception e) {}
+       logoView.setLayoutX(125);
+       logoView.setLayoutY(25);
+       VBox profileBox = new VBox(5);
+       profileBox.setLayoutX(30);
+       profileBox.setLayoutY(100);
+       String firstName = (currentUser != null) ? currentUser.getFirstName() : "User";
+       String lastName = (currentUser != null) ? currentUser.getLastName() : "Name";
+       String email = (currentUser != null) ? currentUser.getEmail() : "email@gmail.com";
+       Label nameLabel = new Label("[ " + firstName + " ] [ " + lastName + " ]");
+       nameLabel.getStyleClass().add("user-name");
+       Label emailLabel = new Label(email);
+       emailLabel.getStyleClass().add("user-email");
+       profileBox.getChildren().addAll(nameLabel, emailLabel);
+       Line separator = new Line(0, 0, width - 60, 0);
+       separator.getStyleClass().add("separator-line");
+       separator.setLayoutX(30);
+       separator.setLayoutY(170);
+       VBox menuContainer = new VBox(15);
+       menuContainer.setLayoutX(20);
+       menuContainer.setLayoutY(200);
+       Button btnDashboard = createMenuItem("⌂", "Dashboard");
+       menuContainer.getChildren().add(btnDashboard);
+       if (currentUser instanceof Student || (currentUser != null && "Student".equalsIgnoreCase(currentUser.getUserType()))) {
+           Button btnPlanner = createMenuItem("✓", "Planner");   
+           Button btnCourseList = createMenuItem("🎓", "Course List");
+           menuContainer.getChildren().addAll(btnPlanner, btnCourseList);
+          
+       } else if (currentUser instanceof Admin || (currentUser != null && "Admin".equalsIgnoreCase(currentUser.getUserType()))) {
+           Button btnCatalogue = createMenuItem("📂", "Academic View Catalogue");
+           menuContainer.getChildren().add(btnCatalogue);
+       }
+       root.getChildren().addAll(solidBg, logoView, profileBox, separator, menuContainer);
+       return root;
+   }
+   private Button createMenuItem(String icon, String text) {
+       Button btn = new Button();
+       btn.getStyleClass().add("menu-item");
+       btn.setPrefWidth(width - 40);
+      
+       Label iconLbl = new Label(icon);
+       iconLbl.getStyleClass().add("menu-icon");
+      
+       Label textLbl = new Label(text);
+       textLbl.getStyleClass().add("menu-text");
+       HBox content = new HBox(15);
+       content.setAlignment(Pos.CENTER_LEFT);
+       content.getChildren().addAll(iconLbl, textLbl);
+       btn.setGraphic(content);
+       return btn;
+   }
+}
+

@@ -3,6 +3,7 @@ package components;
 import java.util.ArrayList;
 
 public class Student extends User {
+	private static final long serialVersionUID = 1L;
     private String studentNumber;
     private DegreeProgram degree;  
     private ArrayList<Course> coursesTaken;

@@ -157,10 +157,22 @@ public class Register {
            if (degreeName.equals("Master of Science in Computer Science")) degreeKey = "MSCS";
            else if (degreeName.equals("Master of Science in Information Technology")) degreeKey = "MIT";
            else if (degreeName.equals("Doctor of Philosophy in Computer Science")) degreeKey = "PHD";
+           
            DegreeProgram degreeObj = Main.degreePrograms.get(degreeKey);
+           // Error check
+           if (degreeObj == null) {
+               Alert alert = new Alert(Alert.AlertType.ERROR, "Error loading degree program. Please try again.");
+               alert.showAndWait();
+               return;
+           }
+           
+           // Load courses if not already loaded
+           if (degreeObj.getCoursesOffered().isEmpty()) {
+               degreeObj.loadCourses();
+           }
           
            // SAVE STUDENT
-           Student newUser = new Student(registerEmail, registerPassword, registerFirstName, registerLastName, "Student", stdNum, degreeObj);
+           Student newUser = new Student(registerEmail, registerPassword, registerFirstName, registerLastName, registerEmail, stdNum, degreeObj);
            Save_Load.saveStudent(newUser);
           
            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Account Created! Please Login.");

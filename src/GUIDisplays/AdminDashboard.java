@@ -8,7 +8,12 @@ import javafx.stage.Stage;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import components.Course;
+import components.Student;
+import components.Save_Load;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AdminDashboard {
     
@@ -16,10 +21,45 @@ public class AdminDashboard {
     private List<Course> allCourses;
     private TableView<CourseRow> courseTable;
     private Label totalLabel;
+    private Map<String, Integer> enrollmentCounts; // Track actual enrollment
     
     public AdminDashboard(Stage primaryStage, List<Course> courses) {
         this.stage = primaryStage;
-        this.allCourses = courses;
+        this.allCourses = (courses == null) ? new ArrayList<>() : courses;
+        this.enrollmentCounts = new HashMap<>();
+        calculateEnrollmentCounts();
+    }
+    
+    // Helper to create a stable key for a course section (normalizes nulls/empties)
+    private String keyFor(String courseID, String section) {
+        String id = (courseID == null || courseID.isEmpty()) ? "N/A" : courseID;
+        String sec = (section == null || section.isEmpty()) ? "N/A" : section;
+        return id + "-" + sec;
+    }
+    
+    // Calculate actual enrollment counts from all students
+    private void calculateEnrollmentCounts() {
+        enrollmentCounts.clear();
+        
+        // Initialize all course sections with 0 so courses with no students are included
+        for (Course c : allCourses) {
+            String key = keyFor(c.getCourseID(), c.getSection());
+            enrollmentCounts.put(key, 0);
+        }
+        
+        // Load all students
+        ArrayList<Student> allStudents = Save_Load.loadAllStudents();
+        if (allStudents == null) allStudents = new ArrayList<>();
+        
+        // Count enrollments for each course
+        for (Student student : allStudents) {
+            for (Course enrolledCourse : student.getCoursesTaken()) {
+                String key = keyFor(enrolledCourse.getCourseID(), enrolledCourse.getSection());
+                enrollmentCounts.put(key, enrollmentCounts.getOrDefault(key, 0) + 1);
+            }
+        }
+        
+        System.out.println("Enrollment counts calculated: " + enrollmentCounts.size() + " unique course sections");
     }
     
     // Inner class for TableView data
@@ -57,14 +97,16 @@ public class AdminDashboard {
         root.setPrefSize(1400, 700);
         root.setStyle("-fx-background-color: #f5f5f5;");
         
-        // Back to Login Button
+        // Top Bar with Back and Refresh buttons
+        HBox topBar = new HBox(10);
+        topBar.setLayoutX(10);
+        topBar.setLayoutY(10);
+        
         Button backButton = new Button("← Logout");
-        backButton.setLayoutX(10);
-        backButton.setLayoutY(10);
         backButton.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; " +
-                           "-fx-font-weight: bold; -fx-padding: 8px 15px; -fx-cursor: hand;");
+                           "-fx-font-weight: bold; -fx-padding: 8px 15px; -fx-cursor: hand; " +
+                           "-fx-font-size: 14px;");
         backButton.setOnAction(e -> {
-            // Return to main login screen
             try {
                 application.Main mainApp = new application.Main();
                 mainApp.start(stage);
@@ -73,23 +115,38 @@ public class AdminDashboard {
             }
         });
         
+        Button refreshButton = new Button("🔄 Refresh Data");
+        refreshButton.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; " +
+                              "-fx-font-weight: bold; -fx-padding: 8px 15px; -fx-cursor: hand; " +
+                              "-fx-font-size: 14px;");
+        refreshButton.setOnAction(e -> {
+            calculateEnrollmentCounts();
+            loadCourseData();
+            System.out.println("Data refreshed!");
+        });
+        
+        topBar.getChildren().addAll(backButton, refreshButton);
+        
         // Title
         Label titleLabel = new Label("Academic Course Catalogue - Admin View");
         titleLabel.setLayoutX(50);
         titleLabel.setLayoutY(50);
-        titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+        titleLabel.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
         
         Label subtitleLabel = new Label("1S 2025-2026");
         subtitleLabel.setLayoutX(50);
         subtitleLabel.setLayoutY(85);
-        subtitleLabel.setStyle("-fx-font-size: 14px;");
+        subtitleLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #7f8c8d;");
         
-        // Total courses label
-        totalLabel = new Label("Total Courses: " + allCourses.size());
+        // Total courses label with enrollment stats
+        int totalEnrolled = enrollmentCounts.values().stream().mapToInt(Integer::intValue).sum();
+        totalLabel = new Label(String.format("Total Courses: %d | Total Enrollments: %d", 
+                                              allCourses.size(), totalEnrolled));
         totalLabel.setLayoutX(50);
         totalLabel.setLayoutY(120);
         totalLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; " +
-                           "-fx-background-color: #e3f2fd; -fx-padding: 10;");
+                           "-fx-background-color: #e3f2fd; -fx-padding: 10px; " +
+                           "-fx-background-radius: 5px; -fx-text-fill: #1976d2;");
         totalLabel.setPrefWidth(1300);
         
         // Create table
@@ -128,25 +185,45 @@ public class AdminDashboard {
         countCol.setCellValueFactory(new PropertyValueFactory<>("count"));
         countCol.setPrefWidth(100);
         
+        // Style the enrollment column to highlight popular courses
+        countCol.setCellFactory(column -> new TableCell<CourseRow, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(item);
+                    try {
+                        int count = Integer.parseInt(item);
+                        if (count >= 30) {
+                            setStyle("-fx-background-color: #ffebee; -fx-text-fill: #c62828; -fx-font-weight: bold;");
+                        } else if (count >= 20) {
+                            setStyle("-fx-background-color: #fff3e0; -fx-text-fill: #ef6c00; -fx-font-weight: bold;");
+                        } else if (count >= 10) {
+                            setStyle("-fx-background-color: #e8f5e9; -fx-text-fill: #2e7d32;");
+                        } else {
+                            setStyle("-fx-text-fill: #616161;");
+                        }
+                    } catch (NumberFormatException e) {
+                        setStyle("");
+                    }
+                }
+            }
+        });
+        
         courseTable.getColumns().addAll(codeCol, titleCol, unitsCol, sectionCol, 
                                         scheduleCol, roomCol, countCol);
         
         // Populate table
         loadCourseData();
         
-        // Debug: Print course count
-        System.out.println("Admin Dashboard - Total courses loaded: " + allCourses.size());
-        if (!allCourses.isEmpty()) {
-            System.out.println("First course: " + allCourses.get(0).getCourseID() + " - " + allCourses.get(0).getTitle());
-        } else {
-            System.out.println("WARNING: No courses in the list!");
-        }
-        
         // Add all components to root
-        root.getChildren().addAll(backButton, titleLabel, subtitleLabel, totalLabel, courseTable);
+        root.getChildren().addAll(topBar, titleLabel, subtitleLabel, totalLabel, courseTable);
         
         Scene scene = new Scene(root, 1400, 700);
-        // Try to load CSS, but don't fail if it doesn't exist
+        // Try to load CSS
         try {
             String css = getClass().getResource("/application/application.css").toExternalForm();
             scene.getStylesheets().add(css);
@@ -162,10 +239,13 @@ public class AdminDashboard {
         ObservableList<CourseRow> data = FXCollections.observableArrayList();
         
         for (Course course : allCourses) {
-            // Generate random  count between 10 and 40
-            int enrolledCount = (int)(Math.random() * 31) + 10;
+            // Get actual enrollment count
+            String key = keyFor(course.getCourseID(), course.getSection());
+            int enrolledCount = enrollmentCounts.getOrDefault(key, 0);
             
-            // Build schedule string, handling null values
+            System.out.println("Course: " + key + " | Enrolled: " + enrolledCount);
+            
+            // Build schedule string
             String schedule = "";
             if (course.getDays() != null && !course.getDays().isEmpty()) {
                 schedule = course.getDays();
@@ -188,14 +268,14 @@ public class AdminDashboard {
                 String.valueOf(enrolledCount)
             );
             data.add(row);
-            
-            // Debug: Print first few courses
-            if (data.size() <= 3) {
-                System.out.println("Added row: " + row.getCourseCode() + " | " + row.getTitle() + " | " + row.getSchedule());
-            }
         }
         
-        System.out.println("Total rows added to table: " + data.size());
+        System.out.println("Total rows in table: " + data.size());
         courseTable.setItems(data);
+        
+        // Update total label
+        int totalEnrolled = enrollmentCounts.values().stream().mapToInt(Integer::intValue).sum();
+        totalLabel.setText(String.format("Total Courses: %d | Total Enrollments: %d", 
+                                        allCourses.size(), totalEnrolled));
     }
 }

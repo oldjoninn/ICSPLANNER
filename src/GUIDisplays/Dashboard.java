@@ -29,7 +29,6 @@ public class Dashboard {
    }
    public Pane getView() {
        Pane root = new Pane();
-       // Only set the preferred width for the sidebar; height will be bound by the caller
        root.setPrefWidth(width);
        
        root.setStyle("-fx-background-color: #050816;");
@@ -94,7 +93,16 @@ public class Dashboard {
            menuContainer.getChildren().addAll(btnPlanner, btnCourseList);
           
        } else if (currentUser instanceof Admin || (currentUser != null && "Admin".equalsIgnoreCase(currentUser.getUserType()))) {
-           Button btnCatalogue = createMenuItem("📂", "Academic View Catalogue");
+           Button btnCatalogue = createMenuItem("📊", "Course Catalogue");
+           
+           // Open Admin Dashboard when clicked
+           btnCatalogue.setOnAction(e -> {
+               if (primaryStage != null) {
+                   AdminDashboard adminDash = new AdminDashboard(primaryStage, Main.courseOfferings, mainApp);
+                   adminDash.show();
+               }
+           });
+           
            menuContainer.getChildren().add(btnCatalogue);
        }
        root.getChildren().addAll(solidBg, logoView, profileBox, separator, menuContainer);

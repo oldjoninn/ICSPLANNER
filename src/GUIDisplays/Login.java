@@ -3,6 +3,7 @@ import components.DegreeProgram;
 import application.Main;
 import components.Save_Load;
 import components.Student;
+import components.Admin;
 import javafx.animation.FadeTransition;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -114,16 +115,19 @@ public class Login {
            String username = txtEmail.getText();
            String passwordLogin = txtPassword.getText();
            
-           //Admin
+           //Admin login - now goes to landing page
            if (username.equals("admin") && passwordLogin.equals("admin123")) {
-               // FIXED: Pass mainApp to AdminDashboard constructor
-               AdminDashboard adminDash = new AdminDashboard(primaryStage, Main.courseOfferings, mainApp);
-               adminDash.show();
                root.getChildren().remove(positionedContainer);
+               if (mainApp != null) {
+                   Admin admin = new Admin();
+                   mainApp.setLogin(true, admin);
+                   // This will trigger displayLandingPage in Main with admin user
+               }
+               primaryStage.setMaximized(true);
                return;
            }
            
-           //Student
+           //Student login
            Student student = Save_Load.loadStudent(username);
            if (student != null && student.getPassword().equals(passwordLogin)) {
               

@@ -24,9 +24,8 @@ public class AdminDashboard {
     private Stage stage;
     private List<Course> allCourses;
     private TableView<CourseRow> courseTable;
-    private Label totalLabel;
-    private Map<String, Integer> enrollmentCounts;
     private Main mainApp;
+    private Map<String, Integer> enrollmentCounts;
     
     public AdminDashboard(Stage primaryStage, List<Course> courses, Main mainApp) {
         this.stage = primaryStage;
@@ -97,9 +96,11 @@ public class AdminDashboard {
     }
     
     public void show() {
-        // Main container with dark background matching the app theme
+        // Main container with modern dark gradient background
         BorderPane root = new BorderPane();
-        root.setStyle("-fx-background-color: #050816;");
+        root.setStyle(
+            "-fx-background-color: linear-gradient(to bottom, #050816, #0a1128);"
+        );
         
         // Top Bar
         HBox topBar = createTopBar();
@@ -128,37 +129,42 @@ public class AdminDashboard {
     
     private HBox createTopBar() {
         HBox topBar = new HBox(15);
-        topBar.setPadding(new Insets(20, 30, 20, 30));
+        topBar.setPadding(new Insets(25, 40, 25, 40));
         topBar.setAlignment(Pos.CENTER_LEFT);
-        topBar.setStyle("-fx-background-color: #050816;");
+        topBar.setStyle(
+            "-fx-background-color: rgba(18, 24, 43, 0.8);" +
+            "-fx-border-color: transparent transparent rgba(115, 222, 255, 0.2) transparent;" +
+            "-fx-border-width: 0 0 2 0;"
+        );
         
-        // Back/Logout Button
-        Button backButton = new Button("← Logout");
+        // Back/Logout Button with improved styling
+        Button backButton = new Button("← Back to Home");
         backButton.setStyle(
             "-fx-background-color: transparent;" +
             "-fx-text-fill: #73deff;" +
             "-fx-font-weight: bold;" +
-            "-fx-font-size: 14px;" +
-            "-fx-padding: 10px 20px;" +
+            "-fx-font-size: 15px;" +
+            "-fx-padding: 12px 24px;" +
             "-fx-cursor: hand;" +
             "-fx-border-color: #73deff;" +
-            "-fx-border-radius: 25px;" +
-            "-fx-background-radius: 25px;" +
+            "-fx-border-radius: 8px;" +
+            "-fx-background-radius: 8px;" +
             "-fx-border-width: 2px;"
         );
         
         backButton.setOnMouseEntered(e -> {
             backButton.setStyle(
-                "-fx-background-color: rgba(115, 222, 255, 0.1);" +
+                "-fx-background-color: rgba(115, 222, 255, 0.15);" +
                 "-fx-text-fill: #73deff;" +
                 "-fx-font-weight: bold;" +
-                "-fx-font-size: 14px;" +
-                "-fx-padding: 10px 20px;" +
+                "-fx-font-size: 15px;" +
+                "-fx-padding: 12px 24px;" +
                 "-fx-cursor: hand;" +
                 "-fx-border-color: #73deff;" +
-                "-fx-border-radius: 25px;" +
-                "-fx-background-radius: 25px;" +
-                "-fx-border-width: 2px;"
+                "-fx-border-radius: 8px;" +
+                "-fx-background-radius: 8px;" +
+                "-fx-border-width: 2px;" +
+                "-fx-effect: dropshadow(gaussian, rgba(115, 222, 255, 0.4), 10, 0, 0, 0);"
             );
         });
         
@@ -167,12 +173,12 @@ public class AdminDashboard {
                 "-fx-background-color: transparent;" +
                 "-fx-text-fill: #73deff;" +
                 "-fx-font-weight: bold;" +
-                "-fx-font-size: 14px;" +
-                "-fx-padding: 10px 20px;" +
+                "-fx-font-size: 15px;" +
+                "-fx-padding: 12px 24px;" +
                 "-fx-cursor: hand;" +
                 "-fx-border-color: #73deff;" +
-                "-fx-border-radius: 25px;" +
-                "-fx-background-radius: 25px;" +
+                "-fx-border-radius: 8px;" +
+                "-fx-background-radius: 8px;" +
                 "-fx-border-width: 2px;"
             );
         });
@@ -180,44 +186,73 @@ public class AdminDashboard {
         backButton.setOnAction(e -> {
             // Navigate back to landing page
             if (mainApp != null) {
-                // Create admin user for landing page
+                Pane mainRoot = new Pane();
                 Admin admin = new Admin();
-                mainApp.setLogin(true, admin);
-                // This will trigger displayLandingPage in Main
-            } else {
-                // Fallback: restart application
+                LandingPage landingPage = new LandingPage(mainApp, admin);
+                landingPage.displayLandingPage(mainRoot, stage);
+                
+                Scene scene = new Scene(mainRoot, 1200, 700);
                 try {
-                    application.Main newApp = new application.Main();
-                    newApp.start(stage);
+                    scene.getStylesheets().add(getClass().getResource("/application/application.css").toExternalForm());
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    System.out.println("CSS not found");
                 }
+                stage.setScene(scene);
+                stage.setMaximized(true);
             }
         });
         
-        // Title
-        Label titleLabel = new Label("Academic Course Catalogue");
+        // Title with gradient effect
+        Label titleLabel = new Label("📊 Academic Course Catalogue");
         titleLabel.setStyle(
             "-fx-text-fill: white;" +
-            "-fx-font-size: 32px;" +
+            "-fx-font-size: 36px;" +
             "-fx-font-weight: bold;" +
-            "-fx-font-family: 'Segoe UI', Arial, sans-serif;"
+            "-fx-font-family: 'Segoe UI', Arial, sans-serif;" +
+            "-fx-effect: dropshadow(gaussian, rgba(115, 222, 255, 0.3), 10, 0, 0, 2);"
         );
         
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         
-        // Refresh Button
-        Button refreshButton = new Button("🔄 Refresh");
+        // Refresh Button with modern styling
+        Button refreshButton = new Button("🔄 Refresh Data");
         refreshButton.setStyle(
-            "-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #73deff, #4973f1);" +
-            "-fx-text-fill: #1d223a;" +
+            "-fx-background-color: linear-gradient(to right, #73deff, #4973f1);" +
+            "-fx-text-fill: white;" +
             "-fx-font-weight: bold;" +
             "-fx-font-size: 14px;" +
-            "-fx-padding: 10px 20px;" +
+            "-fx-padding: 12px 24px;" +
             "-fx-cursor: hand;" +
-            "-fx-background-radius: 8px;"
+            "-fx-background-radius: 8px;" +
+            "-fx-effect: dropshadow(gaussian, rgba(73, 115, 241, 0.4), 10, 0, 0, 3);"
         );
+        
+        refreshButton.setOnMouseEntered(e -> {
+            refreshButton.setStyle(
+                "-fx-background-color: linear-gradient(to right, #8ae5ff, #6a8ff5);" +
+                "-fx-text-fill: white;" +
+                "-fx-font-weight: bold;" +
+                "-fx-font-size: 14px;" +
+                "-fx-padding: 12px 24px;" +
+                "-fx-cursor: hand;" +
+                "-fx-background-radius: 8px;" +
+                "-fx-effect: dropshadow(gaussian, rgba(73, 115, 241, 0.6), 15, 0, 0, 4);"
+            );
+        });
+        
+        refreshButton.setOnMouseExited(e -> {
+            refreshButton.setStyle(
+                "-fx-background-color: linear-gradient(to right, #73deff, #4973f1);" +
+                "-fx-text-fill: white;" +
+                "-fx-font-weight: bold;" +
+                "-fx-font-size: 14px;" +
+                "-fx-padding: 12px 24px;" +
+                "-fx-cursor: hand;" +
+                "-fx-background-radius: 8px;" +
+                "-fx-effect: dropshadow(gaussian, rgba(73, 115, 241, 0.4), 10, 0, 0, 3);"
+            );
+        });
         
         refreshButton.setOnAction(e -> {
             calculateEnrollmentCounts();
@@ -231,18 +266,30 @@ public class AdminDashboard {
     
     private VBox createCenterContent() {
         VBox centerContent = new VBox(20);
-        centerContent.setPadding(new Insets(20, 30, 30, 30));
-        centerContent.setStyle("-fx-background-color: #050816;");
+        centerContent.setPadding(new Insets(30, 40, 40, 40));
+        centerContent.setStyle("-fx-background-color: transparent;");
         
-        // Subtitle and stats
-        Label subtitleLabel = new Label("1S 2025-2026");
-        subtitleLabel.setStyle(
-            "-fx-text-fill: #94a3b8;" +
+        // Semester badge
+        HBox semesterBox = new HBox(10);
+        semesterBox.setAlignment(Pos.CENTER_LEFT);
+        
+        Label semesterBadge = new Label("📅 1S 2025-2026");
+        semesterBadge.setStyle(
+            "-fx-background-color: rgba(115, 222, 255, 0.15);" +
+            "-fx-text-fill: #73deff;" +
             "-fx-font-size: 16px;" +
-            "-fx-font-family: 'Segoe UI', Arial, sans-serif;"
+            "-fx-font-weight: bold;" +
+            "-fx-font-family: 'Segoe UI', Arial, sans-serif;" +
+            "-fx-padding: 10px 20px;" +
+            "-fx-background-radius: 20px;" +
+            "-fx-border-color: #73deff;" +
+            "-fx-border-radius: 20px;" +
+            "-fx-border-width: 1px;"
         );
         
-        // Stats card
+        semesterBox.getChildren().add(semesterBadge);
+        
+        // Stats card with enhanced design
         HBox statsCard = createStatsCard();
         
         // Table
@@ -252,81 +299,94 @@ public class AdminDashboard {
         // Load data
         loadCourseData();
         
-        centerContent.getChildren().addAll(subtitleLabel, statsCard, courseTable);
+        centerContent.getChildren().addAll(semesterBox, statsCard, courseTable);
         return centerContent;
     }
     
     private HBox createStatsCard() {
         HBox statsCard = new HBox(40);
         statsCard.setPadding(new Insets(20));
-        statsCard.setAlignment(Pos.CENTER_LEFT);
+        statsCard.setAlignment(Pos.CENTER);
         statsCard.setStyle(
-            "-fx-background-color: #12182B;" +
+            "-fx-background-color: rgba(18, 24, 43, 0.6);" +
             "-fx-background-radius: 15px;" +
-            "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 20, 0.3, 0, 5);"
+            "-fx-border-color: rgba(115, 222, 255, 0.3);" +
+            "-fx-border-radius: 15px;" +
+            "-fx-border-width: 1px;" +
+            "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 20, 0.4, 0, 6);"
         );
         
         int totalEnrolled = enrollmentCounts.values().stream().mapToInt(Integer::intValue).sum();
         
         // Total Courses
-        VBox coursesBox = createStatBox("Total Courses", String.valueOf(allCourses.size()), "#73deff");
+        VBox coursesBox = createStatBox("Total Courses", String.valueOf(allCourses.size()), "#73deff", "📚");
         
         // Total Enrollments
-        VBox enrollmentsBox = createStatBox("Total Enrollments", String.valueOf(totalEnrolled), "#2ecc71");
+        VBox enrollmentsBox = createStatBox("Total Enrollments", String.valueOf(totalEnrolled), "#2ecc71", "👥");
         
         // Average per course
         double avgEnrollment = allCourses.isEmpty() ? 0 : (double) totalEnrolled / allCourses.size();
-        VBox avgBox = createStatBox("Avg. per Course", String.format("%.1f", avgEnrollment), "#f39c12");
+        VBox avgBox = createStatBox("Avg. per Course", String.format("%.1f", avgEnrollment), "#f39c12", "📊");
         
         statsCard.getChildren().addAll(coursesBox, enrollmentsBox, avgBox);
         return statsCard;
     }
     
-    private VBox createStatBox(String label, String value, String color) {
+    private VBox createStatBox(String label, String value, String color, String icon) {
         VBox box = new VBox(5);
-        box.setAlignment(Pos.CENTER_LEFT);
+        box.setAlignment(Pos.CENTER);
+        box.setPadding(new Insets(8));
+        
+        Label iconLabel = new Label(icon);
+        iconLabel.setStyle(
+            "-fx-font-size: 24px;"
+        );
         
         Label valueLabel = new Label(value);
         valueLabel.setStyle(
             "-fx-text-fill: " + color + ";" +
-            "-fx-font-size: 36px;" +
+            "-fx-font-size: 32px;" +
             "-fx-font-weight: bold;" +
-            "-fx-font-family: 'Segoe UI', Arial, sans-serif;"
+            "-fx-font-family: 'Segoe UI', Arial, sans-serif;" +
+            "-fx-effect: dropshadow(gaussian, " + color + ", 5, 0.3, 0, 0);"
         );
         
         Label nameLabel = new Label(label);
         nameLabel.setStyle(
             "-fx-text-fill: #94a3b8;" +
-            "-fx-font-size: 14px;" +
-            "-fx-font-family: 'Segoe UI', Arial, sans-serif;"
+            "-fx-font-size: 12px;" +
+            "-fx-font-family: 'Segoe UI', Arial, sans-serif;" +
+            "-fx-font-weight: 600;"
         );
         
-        box.getChildren().addAll(valueLabel, nameLabel);
+        box.getChildren().addAll(iconLabel, valueLabel, nameLabel);
         return box;
     }
     
     private TableView<CourseRow> createStyledTable() {
         TableView<CourseRow> table = new TableView<>();
         table.setStyle(
-            "-fx-background-color: #12182B;" +
-            "-fx-background-radius: 15px;" +
-            "-fx-border-radius: 15px;"
+            "-fx-background-color: rgba(18, 24, 43, 0.6);" +
+            "-fx-background-radius: 20px;" +
+            "-fx-border-color: rgba(115, 222, 255, 0.3);" +
+            "-fx-border-radius: 20px;" +
+            "-fx-border-width: 1px;"
         );
         
-        // Define columns
+        // Define columns with improved widths
         TableColumn<CourseRow, String> codeCol = new TableColumn<>("Course Code");
         codeCol.setCellValueFactory(new PropertyValueFactory<>("courseCode"));
-        codeCol.setPrefWidth(120);
+        codeCol.setPrefWidth(130);
         styleColumn(codeCol);
         
         TableColumn<CourseRow, String> titleCol = new TableColumn<>("Course Title");
         titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
-        titleCol.setPrefWidth(350);
+        titleCol.setPrefWidth(380);
         styleColumn(titleCol);
         
         TableColumn<CourseRow, String> unitsCol = new TableColumn<>("Units");
         unitsCol.setCellValueFactory(new PropertyValueFactory<>("units"));
-        unitsCol.setPrefWidth(60);
+        unitsCol.setPrefWidth(70);
         styleColumn(unitsCol);
         
         TableColumn<CourseRow, String> sectionCol = new TableColumn<>("Section");
@@ -336,7 +396,7 @@ public class AdminDashboard {
         
         TableColumn<CourseRow, String> scheduleCol = new TableColumn<>("Schedule");
         scheduleCol.setCellValueFactory(new PropertyValueFactory<>("schedule"));
-        scheduleCol.setPrefWidth(200);
+        scheduleCol.setPrefWidth(220);
         styleColumn(scheduleCol);
         
         TableColumn<CourseRow, String> roomCol = new TableColumn<>("Room");
@@ -346,10 +406,10 @@ public class AdminDashboard {
         
         TableColumn<CourseRow, String> countCol = new TableColumn<>("Enrolled");
         countCol.setCellValueFactory(new PropertyValueFactory<>("count"));
-        countCol.setPrefWidth(100);
+        countCol.setPrefWidth(110);
         styleColumn(countCol);
         
-        // Style enrollment column with color coding
+        // Enhanced enrollment column with gradient backgrounds
         countCol.setCellFactory(column -> new TableCell<CourseRow, String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -363,28 +423,33 @@ public class AdminDashboard {
                         int count = Integer.parseInt(item);
                         if (count >= 30) {
                             setStyle(
-                                "-fx-background-color: #2d1a1e;" +
+                                "-fx-background-color: linear-gradient(to right, rgba(255, 107, 107, 0.2), rgba(255, 107, 107, 0.3));" +
                                 "-fx-text-fill: #ff6b6b;" +
                                 "-fx-font-weight: bold;" +
-                                "-fx-alignment: center;"
+                                "-fx-alignment: center;" +
+                                "-fx-font-size: 13px;"
                             );
                         } else if (count >= 20) {
                             setStyle(
-                                "-fx-background-color: #2d2419;" +
+                                "-fx-background-color: linear-gradient(to right, rgba(243, 156, 18, 0.2), rgba(243, 156, 18, 0.3));" +
                                 "-fx-text-fill: #f39c12;" +
                                 "-fx-font-weight: bold;" +
-                                "-fx-alignment: center;"
+                                "-fx-alignment: center;" +
+                                "-fx-font-size: 13px;"
                             );
                         } else if (count >= 10) {
                             setStyle(
-                                "-fx-background-color: #1a2d1e;" +
+                                "-fx-background-color: linear-gradient(to right, rgba(46, 204, 113, 0.2), rgba(46, 204, 113, 0.3));" +
                                 "-fx-text-fill: #2ecc71;" +
-                                "-fx-alignment: center;"
+                                "-fx-font-weight: bold;" +
+                                "-fx-alignment: center;" +
+                                "-fx-font-size: 13px;"
                             );
                         } else {
                             setStyle(
                                 "-fx-text-fill: #94a3b8;" +
-                                "-fx-alignment: center;"
+                                "-fx-alignment: center;" +
+                                "-fx-font-size: 13px;"
                             );
                         }
                     } catch (NumberFormatException e) {
@@ -402,9 +467,11 @@ public class AdminDashboard {
     
     private void styleColumn(TableColumn<CourseRow, String> column) {
         column.setStyle(
-            "-fx-background-color: #1e293b;" +
+            "-fx-background-color: rgba(30, 41, 59, 0.5);" +
             "-fx-text-fill: white;" +
-            "-fx-alignment: CENTER_LEFT;"
+            "-fx-alignment: CENTER_LEFT;" +
+            "-fx-font-size: 13px;" +
+            "-fx-font-weight: 600;"
         );
     }
     

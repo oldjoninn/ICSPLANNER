@@ -10,6 +10,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
 public class Login {
    private Main mainApp;
   
@@ -112,13 +113,16 @@ public class Login {
        btnLogin.setOnAction(e -> {
            String username = txtEmail.getText();
            String passwordLogin = txtPassword.getText();
+           
            //Admin
            if (username.equals("admin") && passwordLogin.equals("admin123")) {
-               AdminDashboard adminDash = new AdminDashboard(primaryStage, Main.courseOfferings);
+               // FIXED: Pass mainApp to AdminDashboard constructor
+               AdminDashboard adminDash = new AdminDashboard(primaryStage, Main.courseOfferings, mainApp);
                adminDash.show();
                root.getChildren().remove(positionedContainer);
                return;
            }
+           
            //Student
            Student student = Save_Load.loadStudent(username);
            if (student != null && student.getPassword().equals(passwordLogin)) {
@@ -132,7 +136,6 @@ public class Login {
                if (mainApp != null) {
                    mainApp.setLogin(true, student);
                }
-              
               
                primaryStage.setMaximized(true);
               
@@ -148,5 +151,3 @@ public class Login {
        topImage.setLayoutY(310);
    }
 }
-
-

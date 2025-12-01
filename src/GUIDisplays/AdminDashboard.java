@@ -7,9 +7,13 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import components.Course;
 import components.Student;
 import components.Save_Load;
+import components.Admin;
+import application.Main;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,11 +26,13 @@ public class AdminDashboard {
     private TableView<CourseRow> courseTable;
     private Label totalLabel;
     private Map<String, Integer> enrollmentCounts;
+    private Main mainApp;
     
-    public AdminDashboard(Stage primaryStage, List<Course> courses) {
+    public AdminDashboard(Stage primaryStage, List<Course> courses, Main mainApp) {
         this.stage = primaryStage;
         this.allCourses = (courses == null) ? new ArrayList<>() : courses;
         this.enrollmentCounts = new HashMap<>();
+        this.mainApp = mainApp;
         
         System.out.println("AdminDashboard initialized with " + allCourses.size() + " courses");
         calculateEnrollmentCounts();
@@ -91,133 +97,17 @@ public class AdminDashboard {
     }
     
     public void show() {
-        Pane root = new Pane();
-        root.setPrefSize(1400, 700);
-        root.setStyle("-fx-background-color: #f5f5f5;");
+        // Main container with dark background matching the app theme
+        BorderPane root = new BorderPane();
+        root.setStyle("-fx-background-color: #050816;");
         
         // Top Bar
-        HBox topBar = new HBox(10);
-        topBar.setLayoutX(10);
-        topBar.setLayoutY(10);
+        HBox topBar = createTopBar();
+        root.setTop(topBar);
         
-        Button backButton = new Button("← Logout");
-        backButton.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; " +
-                           "-fx-font-weight: bold; -fx-padding: 8px 15px; -fx-cursor: hand; " +
-                           "-fx-font-size: 14px;");
-        backButton.setOnAction(e -> {
-            try {
-                application.Main mainApp = new application.Main();
-                mainApp.start(stage);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        });
-        
-        Button refreshButton = new Button("🔄 Refresh Data");
-        refreshButton.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; " +
-                              "-fx-font-weight: bold; -fx-padding: 8px 15px; -fx-cursor: hand; " +
-                              "-fx-font-size: 14px;");
-        refreshButton.setOnAction(e -> {
-            calculateEnrollmentCounts();
-            loadCourseData();
-            System.out.println("Data refreshed!");
-        });
-        
-        topBar.getChildren().addAll(backButton, refreshButton);
-        
-        // Title
-        Label titleLabel = new Label("Academic Course Catalogue - Admin View");
-        titleLabel.setLayoutX(50);
-        titleLabel.setLayoutY(50);
-        titleLabel.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
-        
-        Label subtitleLabel = new Label("1S 2025-2026");
-        subtitleLabel.setLayoutX(50);
-        subtitleLabel.setLayoutY(85);
-        subtitleLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #7f8c8d;");
-        
-        // Total stats
-        int totalEnrolled = enrollmentCounts.values().stream().mapToInt(Integer::intValue).sum();
-        totalLabel = new Label(String.format("Total Courses: %d | Total Enrollments: %d", 
-                                              allCourses.size(), totalEnrolled));
-        totalLabel.setLayoutX(50);
-        totalLabel.setLayoutY(120);
-        totalLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; " +
-                           "-fx-background-color: #e3f2fd; -fx-padding: 10px; " +
-                           "-fx-background-radius: 5px; -fx-text-fill: #1976d2;");
-        totalLabel.setPrefWidth(1300);
-        
-        // Create table
-        courseTable = new TableView<>();
-        courseTable.setLayoutX(50);
-        courseTable.setLayoutY(170);
-        courseTable.setPrefWidth(1300);
-        courseTable.setPrefHeight(490);
-        
-        // Define columns
-        TableColumn<CourseRow, String> codeCol = new TableColumn<>("Course Code");
-        codeCol.setCellValueFactory(new PropertyValueFactory<>("courseCode"));
-        codeCol.setPrefWidth(120);
-        
-        TableColumn<CourseRow, String> titleCol = new TableColumn<>("Course Title");
-        titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
-        titleCol.setPrefWidth(400);
-        
-        TableColumn<CourseRow, String> unitsCol = new TableColumn<>("Units");
-        unitsCol.setCellValueFactory(new PropertyValueFactory<>("units"));
-        unitsCol.setPrefWidth(60);
-        
-        TableColumn<CourseRow, String> sectionCol = new TableColumn<>("Section");
-        sectionCol.setCellValueFactory(new PropertyValueFactory<>("section"));
-        sectionCol.setPrefWidth(100);
-        
-        TableColumn<CourseRow, String> scheduleCol = new TableColumn<>("Schedule");
-        scheduleCol.setCellValueFactory(new PropertyValueFactory<>("schedule"));
-        scheduleCol.setPrefWidth(250);
-        
-        TableColumn<CourseRow, String> roomCol = new TableColumn<>("Room");
-        roomCol.setCellValueFactory(new PropertyValueFactory<>("room"));
-        roomCol.setPrefWidth(200);
-        
-        TableColumn<CourseRow, String> countCol = new TableColumn<>("Enrolled");
-        countCol.setCellValueFactory(new PropertyValueFactory<>("count"));
-        countCol.setPrefWidth(100);
-        
-        // Style enrollment column
-        countCol.setCellFactory(column -> new TableCell<CourseRow, String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setStyle("");
-                } else {
-                    setText(item);
-                    try {
-                        int count = Integer.parseInt(item);
-                        if (count >= 30) {
-                            setStyle("-fx-background-color: #ffebee; -fx-text-fill: #c62828; -fx-font-weight: bold;");
-                        } else if (count >= 20) {
-                            setStyle("-fx-background-color: #fff3e0; -fx-text-fill: #ef6c00; -fx-font-weight: bold;");
-                        } else if (count >= 10) {
-                            setStyle("-fx-background-color: #e8f5e9; -fx-text-fill: #2e7d32;");
-                        } else {
-                            setStyle("-fx-text-fill: #616161;");
-                        }
-                    } catch (NumberFormatException e) {
-                        setStyle("");
-                    }
-                }
-            }
-        });
-        
-        courseTable.getColumns().addAll(codeCol, titleCol, unitsCol, sectionCol, 
-                                        scheduleCol, roomCol, countCol);
-        
-        // Load data
-        loadCourseData();
-        
-        root.getChildren().addAll(topBar, titleLabel, subtitleLabel, totalLabel, courseTable);
+        // Center content with table
+        VBox centerContent = createCenterContent();
+        root.setCenter(centerContent);
         
         Scene scene = new Scene(root, 1400, 700);
         
@@ -232,7 +122,290 @@ public class AdminDashboard {
         
         stage.setScene(scene);
         stage.setTitle("REGICS - Admin Dashboard");
+        stage.setMaximized(true);
         stage.show();
+    }
+    
+    private HBox createTopBar() {
+        HBox topBar = new HBox(15);
+        topBar.setPadding(new Insets(20, 30, 20, 30));
+        topBar.setAlignment(Pos.CENTER_LEFT);
+        topBar.setStyle("-fx-background-color: #050816;");
+        
+        // Back/Logout Button
+        Button backButton = new Button("← Logout");
+        backButton.setStyle(
+            "-fx-background-color: transparent;" +
+            "-fx-text-fill: #73deff;" +
+            "-fx-font-weight: bold;" +
+            "-fx-font-size: 14px;" +
+            "-fx-padding: 10px 20px;" +
+            "-fx-cursor: hand;" +
+            "-fx-border-color: #73deff;" +
+            "-fx-border-radius: 25px;" +
+            "-fx-background-radius: 25px;" +
+            "-fx-border-width: 2px;"
+        );
+        
+        backButton.setOnMouseEntered(e -> {
+            backButton.setStyle(
+                "-fx-background-color: rgba(115, 222, 255, 0.1);" +
+                "-fx-text-fill: #73deff;" +
+                "-fx-font-weight: bold;" +
+                "-fx-font-size: 14px;" +
+                "-fx-padding: 10px 20px;" +
+                "-fx-cursor: hand;" +
+                "-fx-border-color: #73deff;" +
+                "-fx-border-radius: 25px;" +
+                "-fx-background-radius: 25px;" +
+                "-fx-border-width: 2px;"
+            );
+        });
+        
+        backButton.setOnMouseExited(e -> {
+            backButton.setStyle(
+                "-fx-background-color: transparent;" +
+                "-fx-text-fill: #73deff;" +
+                "-fx-font-weight: bold;" +
+                "-fx-font-size: 14px;" +
+                "-fx-padding: 10px 20px;" +
+                "-fx-cursor: hand;" +
+                "-fx-border-color: #73deff;" +
+                "-fx-border-radius: 25px;" +
+                "-fx-background-radius: 25px;" +
+                "-fx-border-width: 2px;"
+            );
+        });
+        
+        backButton.setOnAction(e -> {
+            // Navigate back to landing page
+            if (mainApp != null) {
+                // Create admin user for landing page
+                Admin admin = new Admin();
+                mainApp.setLogin(true, admin);
+                // This will trigger displayLandingPage in Main
+            } else {
+                // Fallback: restart application
+                try {
+                    application.Main newApp = new application.Main();
+                    newApp.start(stage);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+        
+        // Title
+        Label titleLabel = new Label("Academic Course Catalogue");
+        titleLabel.setStyle(
+            "-fx-text-fill: white;" +
+            "-fx-font-size: 32px;" +
+            "-fx-font-weight: bold;" +
+            "-fx-font-family: 'Segoe UI', Arial, sans-serif;"
+        );
+        
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        
+        // Refresh Button
+        Button refreshButton = new Button("🔄 Refresh");
+        refreshButton.setStyle(
+            "-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #73deff, #4973f1);" +
+            "-fx-text-fill: #1d223a;" +
+            "-fx-font-weight: bold;" +
+            "-fx-font-size: 14px;" +
+            "-fx-padding: 10px 20px;" +
+            "-fx-cursor: hand;" +
+            "-fx-background-radius: 8px;"
+        );
+        
+        refreshButton.setOnAction(e -> {
+            calculateEnrollmentCounts();
+            loadCourseData();
+            System.out.println("Data refreshed!");
+        });
+        
+        topBar.getChildren().addAll(backButton, titleLabel, spacer, refreshButton);
+        return topBar;
+    }
+    
+    private VBox createCenterContent() {
+        VBox centerContent = new VBox(20);
+        centerContent.setPadding(new Insets(20, 30, 30, 30));
+        centerContent.setStyle("-fx-background-color: #050816;");
+        
+        // Subtitle and stats
+        Label subtitleLabel = new Label("1S 2025-2026");
+        subtitleLabel.setStyle(
+            "-fx-text-fill: #94a3b8;" +
+            "-fx-font-size: 16px;" +
+            "-fx-font-family: 'Segoe UI', Arial, sans-serif;"
+        );
+        
+        // Stats card
+        HBox statsCard = createStatsCard();
+        
+        // Table
+        courseTable = createStyledTable();
+        VBox.setVgrow(courseTable, Priority.ALWAYS);
+        
+        // Load data
+        loadCourseData();
+        
+        centerContent.getChildren().addAll(subtitleLabel, statsCard, courseTable);
+        return centerContent;
+    }
+    
+    private HBox createStatsCard() {
+        HBox statsCard = new HBox(40);
+        statsCard.setPadding(new Insets(20));
+        statsCard.setAlignment(Pos.CENTER_LEFT);
+        statsCard.setStyle(
+            "-fx-background-color: #12182B;" +
+            "-fx-background-radius: 15px;" +
+            "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 20, 0.3, 0, 5);"
+        );
+        
+        int totalEnrolled = enrollmentCounts.values().stream().mapToInt(Integer::intValue).sum();
+        
+        // Total Courses
+        VBox coursesBox = createStatBox("Total Courses", String.valueOf(allCourses.size()), "#73deff");
+        
+        // Total Enrollments
+        VBox enrollmentsBox = createStatBox("Total Enrollments", String.valueOf(totalEnrolled), "#2ecc71");
+        
+        // Average per course
+        double avgEnrollment = allCourses.isEmpty() ? 0 : (double) totalEnrolled / allCourses.size();
+        VBox avgBox = createStatBox("Avg. per Course", String.format("%.1f", avgEnrollment), "#f39c12");
+        
+        statsCard.getChildren().addAll(coursesBox, enrollmentsBox, avgBox);
+        return statsCard;
+    }
+    
+    private VBox createStatBox(String label, String value, String color) {
+        VBox box = new VBox(5);
+        box.setAlignment(Pos.CENTER_LEFT);
+        
+        Label valueLabel = new Label(value);
+        valueLabel.setStyle(
+            "-fx-text-fill: " + color + ";" +
+            "-fx-font-size: 36px;" +
+            "-fx-font-weight: bold;" +
+            "-fx-font-family: 'Segoe UI', Arial, sans-serif;"
+        );
+        
+        Label nameLabel = new Label(label);
+        nameLabel.setStyle(
+            "-fx-text-fill: #94a3b8;" +
+            "-fx-font-size: 14px;" +
+            "-fx-font-family: 'Segoe UI', Arial, sans-serif;"
+        );
+        
+        box.getChildren().addAll(valueLabel, nameLabel);
+        return box;
+    }
+    
+    private TableView<CourseRow> createStyledTable() {
+        TableView<CourseRow> table = new TableView<>();
+        table.setStyle(
+            "-fx-background-color: #12182B;" +
+            "-fx-background-radius: 15px;" +
+            "-fx-border-radius: 15px;"
+        );
+        
+        // Define columns
+        TableColumn<CourseRow, String> codeCol = new TableColumn<>("Course Code");
+        codeCol.setCellValueFactory(new PropertyValueFactory<>("courseCode"));
+        codeCol.setPrefWidth(120);
+        styleColumn(codeCol);
+        
+        TableColumn<CourseRow, String> titleCol = new TableColumn<>("Course Title");
+        titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
+        titleCol.setPrefWidth(350);
+        styleColumn(titleCol);
+        
+        TableColumn<CourseRow, String> unitsCol = new TableColumn<>("Units");
+        unitsCol.setCellValueFactory(new PropertyValueFactory<>("units"));
+        unitsCol.setPrefWidth(60);
+        styleColumn(unitsCol);
+        
+        TableColumn<CourseRow, String> sectionCol = new TableColumn<>("Section");
+        sectionCol.setCellValueFactory(new PropertyValueFactory<>("section"));
+        sectionCol.setPrefWidth(100);
+        styleColumn(sectionCol);
+        
+        TableColumn<CourseRow, String> scheduleCol = new TableColumn<>("Schedule");
+        scheduleCol.setCellValueFactory(new PropertyValueFactory<>("schedule"));
+        scheduleCol.setPrefWidth(200);
+        styleColumn(scheduleCol);
+        
+        TableColumn<CourseRow, String> roomCol = new TableColumn<>("Room");
+        roomCol.setCellValueFactory(new PropertyValueFactory<>("room"));
+        roomCol.setPrefWidth(180);
+        styleColumn(roomCol);
+        
+        TableColumn<CourseRow, String> countCol = new TableColumn<>("Enrolled");
+        countCol.setCellValueFactory(new PropertyValueFactory<>("count"));
+        countCol.setPrefWidth(100);
+        styleColumn(countCol);
+        
+        // Style enrollment column with color coding
+        countCol.setCellFactory(column -> new TableCell<CourseRow, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("-fx-background-color: transparent;");
+                } else {
+                    setText(item);
+                    try {
+                        int count = Integer.parseInt(item);
+                        if (count >= 30) {
+                            setStyle(
+                                "-fx-background-color: #2d1a1e;" +
+                                "-fx-text-fill: #ff6b6b;" +
+                                "-fx-font-weight: bold;" +
+                                "-fx-alignment: center;"
+                            );
+                        } else if (count >= 20) {
+                            setStyle(
+                                "-fx-background-color: #2d2419;" +
+                                "-fx-text-fill: #f39c12;" +
+                                "-fx-font-weight: bold;" +
+                                "-fx-alignment: center;"
+                            );
+                        } else if (count >= 10) {
+                            setStyle(
+                                "-fx-background-color: #1a2d1e;" +
+                                "-fx-text-fill: #2ecc71;" +
+                                "-fx-alignment: center;"
+                            );
+                        } else {
+                            setStyle(
+                                "-fx-text-fill: #94a3b8;" +
+                                "-fx-alignment: center;"
+                            );
+                        }
+                    } catch (NumberFormatException e) {
+                        setStyle("-fx-text-fill: #94a3b8; -fx-alignment: center;");
+                    }
+                }
+            }
+        });
+        
+        table.getColumns().addAll(codeCol, titleCol, unitsCol, sectionCol, 
+                                  scheduleCol, roomCol, countCol);
+        
+        return table;
+    }
+    
+    private void styleColumn(TableColumn<CourseRow, String> column) {
+        column.setStyle(
+            "-fx-background-color: #1e293b;" +
+            "-fx-text-fill: white;" +
+            "-fx-alignment: CENTER_LEFT;"
+        );
     }
     
     private void loadCourseData() {
@@ -270,9 +443,5 @@ public class AdminDashboard {
         
         System.out.println("Table loaded with " + data.size() + " rows");
         courseTable.setItems(data);
-        
-        int totalEnrolled = enrollmentCounts.values().stream().mapToInt(Integer::intValue).sum();
-        totalLabel.setText(String.format("Total Courses: %d | Total Enrollments: %d", 
-                                        allCourses.size(), totalEnrolled));
     }
 }

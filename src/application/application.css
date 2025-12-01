@@ -186,11 +186,13 @@
    1. BACKGROUND (Deep Blue Gradient)
    ============================================================================= */
 .root {
-    -fx-background-color: #050b14;
+    /* Base background color (bottom-most layer) and two subtle radial gradient "blobs" on top */
     /* Creates the subtle blue blurred blobs in the background */
-    -fx-background-image: 
+    /* Compose multiple background layers: gradients first (top), then the solid color (bottom) */
+    -fx-background-color: 
         radial-gradient(focus-angle 0deg, focus-distance 0%, center 25% 25%, radius 50%, rgba(30, 60, 160, 0.3), transparent),
-        radial-gradient(focus-angle 0deg, focus-distance 0%, center 75% 75%, radius 40%, rgba(70, 140, 250, 0.2), transparent);
+        radial-gradient(focus-angle 0deg, focus-distance 0%, center 75% 75%, radius 40%, rgba(70, 140, 250, 0.2), transparent),
+        #050b14;
 }
 
 /* =============================================================================
@@ -379,6 +381,3 @@
     -fx-background-color: transparent;
     -fx-background: transparent;
 }
-
-
-

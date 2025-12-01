@@ -21,37 +21,36 @@ public class AdminDashboard {
     private List<Course> allCourses;
     private TableView<CourseRow> courseTable;
     private Label totalLabel;
-    private Map<String, Integer> enrollmentCounts; // Track actual enrollment
+    private Map<String, Integer> enrollmentCounts;
     
     public AdminDashboard(Stage primaryStage, List<Course> courses) {
         this.stage = primaryStage;
         this.allCourses = (courses == null) ? new ArrayList<>() : courses;
         this.enrollmentCounts = new HashMap<>();
+        
+        System.out.println("AdminDashboard initialized with " + allCourses.size() + " courses");
         calculateEnrollmentCounts();
     }
     
-    // Helper to create a stable key for a course section (normalizes nulls/empties)
     private String keyFor(String courseID, String section) {
         String id = (courseID == null || courseID.isEmpty()) ? "N/A" : courseID;
         String sec = (section == null || section.isEmpty()) ? "N/A" : section;
         return id + "-" + sec;
     }
     
-    // Calculate actual enrollment counts from all students
     private void calculateEnrollmentCounts() {
         enrollmentCounts.clear();
         
-        // Initialize all course sections with 0 so courses with no students are included
+        // Initialize all course sections with 0
         for (Course c : allCourses) {
             String key = keyFor(c.getCourseID(), c.getSection());
             enrollmentCounts.put(key, 0);
         }
         
-        // Load all students
+        // Load all students and count enrollments
         ArrayList<Student> allStudents = Save_Load.loadAllStudents();
         if (allStudents == null) allStudents = new ArrayList<>();
         
-        // Count enrollments for each course
         for (Student student : allStudents) {
             for (Course enrolledCourse : student.getCoursesTaken()) {
                 String key = keyFor(enrolledCourse.getCourseID(), enrolledCourse.getSection());
@@ -59,10 +58,9 @@ public class AdminDashboard {
             }
         }
         
-        System.out.println("Enrollment counts calculated: " + enrollmentCounts.size() + " unique course sections");
+        System.out.println("Enrollment counts: " + enrollmentCounts.size() + " sections");
     }
     
-    // Inner class for TableView data
     public static class CourseRow {
         private String courseCode;
         private String title;
@@ -97,7 +95,7 @@ public class AdminDashboard {
         root.setPrefSize(1400, 700);
         root.setStyle("-fx-background-color: #f5f5f5;");
         
-        // Top Bar with Back and Refresh buttons
+        // Top Bar
         HBox topBar = new HBox(10);
         topBar.setLayoutX(10);
         topBar.setLayoutY(10);
@@ -138,7 +136,7 @@ public class AdminDashboard {
         subtitleLabel.setLayoutY(85);
         subtitleLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #7f8c8d;");
         
-        // Total courses label with enrollment stats
+        // Total stats
         int totalEnrolled = enrollmentCounts.values().stream().mapToInt(Integer::intValue).sum();
         totalLabel = new Label(String.format("Total Courses: %d | Total Enrollments: %d", 
                                               allCourses.size(), totalEnrolled));
@@ -185,7 +183,7 @@ public class AdminDashboard {
         countCol.setCellValueFactory(new PropertyValueFactory<>("count"));
         countCol.setPrefWidth(100);
         
-        // Style the enrollment column to highlight popular courses
+        // Style enrollment column
         countCol.setCellFactory(column -> new TableCell<CourseRow, String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -216,20 +214,22 @@ public class AdminDashboard {
         courseTable.getColumns().addAll(codeCol, titleCol, unitsCol, sectionCol, 
                                         scheduleCol, roomCol, countCol);
         
-        // Populate table
+        // Load data
         loadCourseData();
         
-        // Add all components to root
         root.getChildren().addAll(topBar, titleLabel, subtitleLabel, totalLabel, courseTable);
         
         Scene scene = new Scene(root, 1400, 700);
-        // Try to load CSS
+        
+        // Load CSS
         try {
             String css = getClass().getResource("/application/application.css").toExternalForm();
             scene.getStylesheets().add(css);
+            System.out.println("CSS loaded successfully");
         } catch (Exception ex) {
-            System.out.println("CSS file not found, using default styles");
+            System.err.println("CSS file not found: " + ex.getMessage());
         }
+        
         stage.setScene(scene);
         stage.setTitle("REGICS - Admin Dashboard");
         stage.show();
@@ -238,14 +238,12 @@ public class AdminDashboard {
     private void loadCourseData() {
         ObservableList<CourseRow> data = FXCollections.observableArrayList();
         
+        System.out.println("Loading " + allCourses.size() + " courses into table...");
+        
         for (Course course : allCourses) {
-            // Get actual enrollment count
             String key = keyFor(course.getCourseID(), course.getSection());
             int enrolledCount = enrollmentCounts.getOrDefault(key, 0);
             
-            System.out.println("Course: " + key + " | Enrolled: " + enrolledCount);
-            
-            // Build schedule string
             String schedule = "";
             if (course.getDays() != null && !course.getDays().isEmpty()) {
                 schedule = course.getDays();
@@ -270,10 +268,9 @@ public class AdminDashboard {
             data.add(row);
         }
         
-        System.out.println("Total rows in table: " + data.size());
+        System.out.println("Table loaded with " + data.size() + " rows");
         courseTable.setItems(data);
         
-        // Update total label
         int totalEnrolled = enrollmentCounts.values().stream().mapToInt(Integer::intValue).sum();
         totalLabel.setText(String.format("Total Courses: %d | Total Enrollments: %d", 
                                         allCourses.size(), totalEnrolled));

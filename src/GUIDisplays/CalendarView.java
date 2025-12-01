@@ -13,6 +13,7 @@ import java.util.*;
 
 public class CalendarView {
     
+    private Main mainApp;
     private Student student;
     private Stage stage;
     private Set<String> newlyAddedCourses;
@@ -31,7 +32,8 @@ public class CalendarView {
     
     private static final String[] DAYS = {"Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"};
     
-    public CalendarView(Student student, Stage stage) {
+    public CalendarView(Main mainApp, Student student, Stage stage) {
+        this.mainApp = mainApp;
         this.student = student;
         this.stage = stage;
         this.newlyAddedCourses = new HashSet<>();
@@ -76,7 +78,8 @@ public class CalendarView {
                            "-fx-font-weight: bold; -fx-padding: 8px 15px;");
         backButton.setOnAction(e -> {
             Pane mainRoot = new Pane();
-            LandingPage landingPage = new LandingPage();
+            // Create LandingPage with application context so dashboard and other menus work
+            LandingPage landingPage = new LandingPage(mainApp, student);
             landingPage.displayLandingPage(mainRoot, stage);
             Scene scene = new Scene(mainRoot, 1200, 700);
             try {
@@ -94,7 +97,7 @@ public class CalendarView {
         enlistButton.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; " +
                              "-fx-font-weight: bold; -fx-padding: 8px 15px;");
         enlistButton.setOnAction(e -> {
-            EnlistmentUI enlistment = new EnlistmentUI(student, Main.courseOfferings);
+            EnlistmentUI enlistment = new EnlistmentUI(mainApp, student, Main.courseOfferings, stage);
             Scene enlistScene = enlistment.EnlistScreen(stage);
             stage.setScene(enlistScene);
         });
@@ -364,8 +367,8 @@ public class CalendarView {
         int minute = parts.length > 1 ? Integer.parseInt(parts[1]) : 0;
         
         if (hour == 12) hour = 12; // Noon
-		else if (hour >= 1 && hour <= 6) hour += 12; // PM times after noon
-		else if (hour == 7) {
+        else if (hour >= 1 && hour <= 6) hour += 12; // PM times after noon
+        else if (hour == 7) {
 			if (isEndTime) hour += 12; // 7 PM is 19:00
 		}
         
@@ -533,7 +536,6 @@ public class CalendarView {
         
         
 
-    
         // Add visual indicator for newly added courses
         if (isNew) {
             Label newBadge = new Label("★ NEW");

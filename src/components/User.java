@@ -2,18 +2,21 @@ package components;
 import java.io.Serializable;
 public abstract class User implements Serializable {
 	private static final long serialVersionUID = 1L;
+    private String username;
     private String email; 
     private String password;
     private String firstName;
     private String lastName;
 
     public User(String username, String password, String firstName, String lastName, String email) {
+        this.username = username;
         this.email = email;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
     }
 
+    public String getUsername() { return username; }
     public String getEmail() { return email; } 
     public String getPassword() { return password; }
     public String getFirstName() { return firstName; }

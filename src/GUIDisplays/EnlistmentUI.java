@@ -18,14 +18,19 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import components.Course;
 import components.Student;
 import components.Save_Load;
+import application.Main;
 public class EnlistmentUI {
+   private Main mainApp;
+   private Stage primaryStage;
    private Student student;
    private ObservableList<Course> availableCourses;
    private ObservableList<Course> plannedCourses;
    private List<Course> courseOfferings;
    private Set<String> newlyAddedCourses; // Track newly added courses in this session
   
-   public EnlistmentUI(Student student, List<Course> courseOfferings) {
+   public EnlistmentUI(Main mainApp, Student student, List<Course> courseOfferings, Stage primaryStage) {
+       this.mainApp = mainApp;
+       this.primaryStage = primaryStage;
        this.student = student;
        this.availableCourses = FXCollections.observableArrayList();
        this.courseOfferings = courseOfferings;
@@ -42,7 +47,8 @@ public class EnlistmentUI {
        backButton.setLayoutY(10);
        backButton.setOnAction(e -> {
            root.getChildren().clear();
-           LandingPage landingPage = new LandingPage();
+           // Return to LandingPage with application context so dashboard works
+           LandingPage landingPage = new LandingPage(mainApp, student);
            landingPage.displayLandingPage(root, primaryStage);
        });
       
@@ -53,7 +59,7 @@ public class EnlistmentUI {
        viewCalendarButton.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; " +
                                   "-fx-font-weight: bold; -fx-padding: 8px 15px;");
        viewCalendarButton.setOnAction(e -> {
-           CalendarView calendarView = new CalendarView(student, primaryStage);
+           CalendarView calendarView = new CalendarView(mainApp, student, primaryStage);
           
            // Mark newly added courses
            for (String courseKey : newlyAddedCourses) {
@@ -189,7 +195,7 @@ public class EnlistmentUI {
                            }
                           
                            // Check for time conflicts
-                           CalendarView tempCalendar = new CalendarView(student, primaryStage);
+                           CalendarView tempCalendar = new CalendarView(mainApp, student, primaryStage);
                            if (tempCalendar.hasTimeConflict(selectedCourse)) {
                                showErrorPopup("Schedule Conflict",
                                    "Cannot add " + selectedCourse.getCourseID() + " " + selectedCourse.getSection() +
@@ -368,6 +374,3 @@ public class EnlistmentUI {
        alert.showAndWait();
    }
 }
-
-
-

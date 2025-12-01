@@ -2,7 +2,9 @@ package GUIDisplays;
 import components.Admin;
 import components.Student;
 import components.User;
+import application.Main;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -13,26 +15,30 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
 public class Dashboard {
    private final double width;
-   private final double height;
    private User currentUser;
-   public Dashboard(double width, double height, User user) {
+   private Main mainApp;
+   private Stage primaryStage;
+   public Dashboard(double width, Main mainApp, Stage primaryStage, User user) {
        this.width = width;
-       this.height = height;
        this.currentUser = user;
+       this.mainApp = mainApp;
+       this.primaryStage = primaryStage;
    }
    public Pane getView() {
        Pane root = new Pane();
-       root.setPrefSize(width, height);
-      
+       // Only set the preferred width for the sidebar; height will be bound by the caller
+       root.setPrefWidth(width);
+       
        root.setStyle("-fx-background-color: #050816;");
-      
+       
        Rectangle solidBg = new Rectangle();
        solidBg.setWidth(width);
        solidBg.heightProperty().bind(root.heightProperty());
        solidBg.setFill(Color.web("#050816"));
-      
+       
        ImageView logoView = new ImageView();
        try {
            Image logoImage = new Image(getClass().getResourceAsStream("/images/REGICSLogo.png"));
@@ -65,6 +71,26 @@ public class Dashboard {
        if (currentUser instanceof Student || (currentUser != null && "Student".equalsIgnoreCase(currentUser.getUserType()))) {
            Button btnPlanner = createMenuItem("✓", "Planner");   
            Button btnCourseList = createMenuItem("🎓", "Course List");
+
+           // Open Enlistment UI when Planner clicked
+           btnPlanner.setOnAction(e -> {
+               if (currentUser instanceof Student && primaryStage != null) {
+                   EnlistmentUI enlist = new EnlistmentUI(mainApp, (Student) currentUser, Main.courseOfferings, primaryStage);
+                   Scene s = enlist.EnlistScreen(primaryStage);
+                   primaryStage.setScene(s);
+                   primaryStage.setMaximized(true);
+               }
+           });
+
+           // Open Calendar View when Course List clicked (shows weekly schedule)
+           btnCourseList.setOnAction(e -> {
+               if (currentUser instanceof Student && primaryStage != null) {
+                   CalendarView cal = new CalendarView(mainApp, (Student) currentUser, primaryStage);
+                   Scene s = cal.createCalendarScene();
+                   primaryStage.setScene(s);
+               }
+           });
+
            menuContainer.getChildren().addAll(btnPlanner, btnCourseList);
           
        } else if (currentUser instanceof Admin || (currentUser != null && "Admin".equalsIgnoreCase(currentUser.getUserType()))) {
@@ -91,4 +117,3 @@ public class Dashboard {
        return btn;
    }
 }
-

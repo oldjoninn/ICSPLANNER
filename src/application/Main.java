@@ -188,7 +188,9 @@ public class Main extends Application {
     }
   
     private void displayLandingPage() {
-        landingPage = new LandingPage();
+        // Pass the Main instance and the current user so the landing page and dashboard
+        // receive the correct application context and can open Planner/Calendar.
+        landingPage = new LandingPage(this, currentUser);
         landingPage.displayLandingPage(root, primaryStage);
         primaryStage.setMaximized(true);
     }

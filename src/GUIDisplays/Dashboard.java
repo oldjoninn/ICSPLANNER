@@ -30,14 +30,14 @@ public class Dashboard {
    public Pane getView() {
        Pane root = new Pane();
        root.setPrefWidth(width);
-       
        root.setStyle("-fx-background-color: #050816;");
-       
+     
        Rectangle solidBg = new Rectangle();
        solidBg.setWidth(width);
        solidBg.heightProperty().bind(root.heightProperty());
        solidBg.setFill(Color.web("#050816"));
-       
+     
+       // Logo
        ImageView logoView = new ImageView();
        try {
            Image logoImage = new Image(getClass().getResourceAsStream("/images/REGICSLogo.png"));
@@ -47,6 +47,7 @@ public class Dashboard {
        } catch (Exception e) {}
        logoView.setLayoutX(125);
        logoView.setLayoutY(25);
+     
        VBox profileBox = new VBox(5);
        profileBox.setLayoutX(30);
        profileBox.setLayoutY(100);
@@ -58,20 +59,37 @@ public class Dashboard {
        Label emailLabel = new Label(email);
        emailLabel.getStyleClass().add("user-email");
        profileBox.getChildren().addAll(nameLabel, emailLabel);
+ 
        Line separator = new Line(0, 0, width - 60, 0);
        separator.getStyleClass().add("separator-line");
        separator.setLayoutX(30);
        separator.setLayoutY(170);
+      
        VBox menuContainer = new VBox(15);
        menuContainer.setLayoutX(20);
        menuContainer.setLayoutY(200);
+   
        Button btnDashboard = createMenuItem("⌂", "Dashboard");
+       btnDashboard.setOnAction(e -> {
+           if (mainApp != null) {
+             
+               Pane mainRoot = new Pane();
+               LandingPage landing = new LandingPage(mainApp, currentUser);
+               landing.displayLandingPage(mainRoot, primaryStage);
+              
+               Scene scene = new Scene(mainRoot, 1200, 700);
+               try {
+                   scene.getStylesheets().add(getClass().getResource("/application/application.css").toExternalForm());
+               } catch (Exception ex) {}
+               primaryStage.setScene(scene);
+           }
+       });
        menuContainer.getChildren().add(btnDashboard);
+      
        if (currentUser instanceof Student || (currentUser != null && "Student".equalsIgnoreCase(currentUser.getUserType()))) {
-           Button btnPlanner = createMenuItem("✓", "Planner");   
-           Button btnCourseList = createMenuItem("🎓", "Course List");
-
-           // Open Enlistment UI when Planner clicked
+          
+        
+           Button btnPlanner = createMenuItem("✓", "Planner");  
            btnPlanner.setOnAction(e -> {
                if (currentUser instanceof Student && primaryStage != null) {
                    EnlistmentUI enlist = new EnlistmentUI(mainApp, (Student) currentUser, Main.courseOfferings, primaryStage);
@@ -80,29 +98,35 @@ public class Dashboard {
                    primaryStage.setMaximized(true);
                }
            });
-
-           // Open Calendar View when Course List clicked (shows weekly schedule)
-           btnCourseList.setOnAction(e -> {
+    
+           Button btnCalendar = createMenuItem("📅", "Calendar");
+           btnCalendar.setOnAction(e -> {
                if (currentUser instanceof Student && primaryStage != null) {
                    CalendarView cal = new CalendarView(mainApp, (Student) currentUser, primaryStage);
                    Scene s = cal.createCalendarScene();
                    primaryStage.setScene(s);
+                   primaryStage.setMaximized(true);
                }
            });
-
-           menuContainer.getChildren().addAll(btnPlanner, btnCourseList);
           
-       } else if (currentUser instanceof Admin || (currentUser != null && "Admin".equalsIgnoreCase(currentUser.getUserType()))) {
-           Button btnCatalogue = createMenuItem("📊", "Course Catalogue");
-           
-           // Open Admin Dashboard when clicked
-           btnCatalogue.setOnAction(e -> {
-               if (primaryStage != null) {
-                   AdminDashboard adminDash = new AdminDashboard(primaryStage, Main.courseOfferings, mainApp);
-                   adminDash.show();
+         
+           Button btnCatalog = createMenuItem("🎓", "Course List");
+           btnCatalog.setOnAction(e -> {
+               if (currentUser instanceof Student && primaryStage != null) {
+                   // Uses the updated constructor (Main, Student)
+                   CourseCatalog catalog = new CourseCatalog(mainApp, (Student) currentUser);
+                   Scene s = catalog.createCatalogScene(primaryStage);
+                   primaryStage.setScene(s);
+                   primaryStage.setMaximized(true);
                }
            });
-           
+           menuContainer.getChildren().addAll(btnPlanner, btnCalendar, btnCatalog);
+         
+       } else if (currentUser instanceof Admin || (currentUser != null && "Admin".equalsIgnoreCase(currentUser.getUserType()))) {
+           Button btnCatalogue = createMenuItem("📂", "Academic View Catalogue");
+           btnCatalogue.setOnAction(e -> {
+              
+           });
            menuContainer.getChildren().add(btnCatalogue);
        }
        root.getChildren().addAll(solidBg, logoView, profileBox, separator, menuContainer);
@@ -112,10 +136,10 @@ public class Dashboard {
        Button btn = new Button();
        btn.getStyleClass().add("menu-item");
        btn.setPrefWidth(width - 40);
-      
+     
        Label iconLbl = new Label(icon);
        iconLbl.getStyleClass().add("menu-icon");
-      
+     
        Label textLbl = new Label(text);
        textLbl.getStyleClass().add("menu-text");
        HBox content = new HBox(15);
@@ -125,3 +149,6 @@ public class Dashboard {
        return btn;
    }
 }
+
+
+

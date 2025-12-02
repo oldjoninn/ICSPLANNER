@@ -1,101 +1,96 @@
-/* Announcement Page Styling */
-
 .announcement-root {
     -fx-background-color: #050816;
 }
 
+
 .announcement-title {
     -fx-text-fill: white;
-    -fx-font-size: 38px;
+    -fx-font-size: 32px;
     -fx-font-weight: bold;
-    -fx-font-family: 'Segoe UI', Arial, sans-serif;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0.3, 0, 2);
+    -fx-font-family: 'Poppins', sans-serif;
 }
+
 
 .close-button {
-    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-background-color: transparent;
     -fx-text-fill: #94a3b8;
     -fx-font-size: 14px;
-    -fx-font-weight: bold;
     -fx-cursor: hand;
     -fx-border-color: #334155;
-    -fx-border-width: 2px;
     -fx-border-radius: 8px;
-    -fx-background-radius: 8px;
-    -fx-padding: 8px 20px;
+    -fx-padding: 6px 16px;
 }
-
 .close-button:hover {
     -fx-text-fill: white;
     -fx-border-color: white;
-    -fx-background-color: rgba(255, 255, 255, 0.15);
 }
 
-.close-button:pressed {
-    -fx-background-color: rgba(255, 255, 255, 0.2);
-}
 
-/* Card Styling */
 .card-body {
     -fx-background-color: #12182B;
     -fx-background-radius: 20px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 20, 0.3, 0, 5);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 15, 0, 0, 4);
 }
+
 
 .card-title {
     -fx-text-fill: white;
-    -fx-font-size: 20px;
+    -fx-font-size: 18px;
     -fx-font-weight: bold;
-    -fx-font-family: 'Segoe UI', Arial, sans-serif;
+    -fx-font-family: 'Poppins', sans-serif;
 }
+
 
 .card-desc {
     -fx-text-fill: #94a3b8;
-    -fx-font-size: 14px;
-    -fx-font-family: 'Segoe UI', Arial, sans-serif;
-    -fx-line-spacing: 3px;
+    -fx-font-size: 12px;
+    -fx-font-family: 'Poppins', sans-serif;
+    -fx-line-spacing: 2px;
 }
+
 
 .card-image-container {
     -fx-background-color: #1e293b;
     -fx-background-radius: 12px;
 }
 
-/* ScrollPane Styling */
+
+/* --- ScrollPane Styling --- */
+
+
+/* Make the viewport transparent so the dark background shows */
 .custom-scroll-pane > .viewport {
     -fx-background-color: transparent;
 }
 
+
+/* Remove default border */
 .custom-scroll-pane {
     -fx-background-color: transparent;
     -fx-background: transparent;
     -fx-border-width: 0;
 }
 
+
+/* Style the scrollbar to be subtle */
 .custom-scroll-pane .scroll-bar:vertical {
     -fx-background-color: transparent;
-    -fx-pref-width: 12;
+    -fx-pref-width: 10;
 }
+
 
 .custom-scroll-pane .scroll-bar:vertical .thumb {
     -fx-background-color: rgba(255, 255, 255, 0.2);
-    -fx-background-radius: 6px;
+    -fx-background-radius: 5em;
 }
+
 
 .custom-scroll-pane .scroll-bar:vertical .thumb:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.35);
+    -fx-background-color: rgba(255, 255, 255, 0.4);
 }
 
-.custom-scroll-pane .scroll-bar:vertical .track {
-    -fx-background-color: transparent;
-}
-
-.custom-scroll-pane .scroll-bar .increment-button,
-.custom-scroll-pane .scroll-bar .decrement-button {
-    -fx-background-color: transparent;
-    -fx-padding: 0;
-}
 
 .scroll-content {
     -fx-background-color: transparent;
 }
+

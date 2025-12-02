@@ -1,88 +1,73 @@
 package GUIDisplays;
-
-import javafx.animation.FadeTransition;
+import components.User;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.util.Duration;
-
+import application.Main;
+import java.util.ArrayList;
+import java.util.List;
 public class About {
-    private ImageView aboutBackgroundImage;
-    
-    public About() {
-        
-    }
-    
-    public void displayAbout(Pane root, Stage primaryStage) {
-        try {
-            // Load and set up the about background image
-            Image aboutImage = new Image(getClass().getResourceAsStream("/images/AboutPage.png"));
-            aboutBackgroundImage = new ImageView(aboutImage);
-            
-            // Make background image fill the entire screen
-            aboutBackgroundImage.setFitWidth(primaryStage.getWidth());
-            aboutBackgroundImage.setFitHeight(primaryStage.getHeight());
-            aboutBackgroundImage.setPreserveRatio(false); // Stretch to fill
-            
-            // Set initial opacity to 0 for fade in
-            aboutBackgroundImage.setOpacity(0);
-            
-            // Add the about background image on top of main background but behind buttons
-            addAtCorrectZIndex(root, aboutBackgroundImage);
-            
-            // Create fade in animation
-            FadeTransition fadeIn = new FadeTransition(Duration.millis(500), aboutBackgroundImage);
-            fadeIn.setFromValue(0.0);
-            fadeIn.setToValue(1.0);
-            fadeIn.play();
-            
-        } catch (Exception e) {
-            System.err.println("About background image not found");
-        }
-    }
-    
-    public void revertToMainBackground(Pane root, Stage primaryStage, Runnable onFinished) {
-        if (aboutBackgroundImage != null && root.getChildren().contains(aboutBackgroundImage)) {
-            // Create fade out animation
-            FadeTransition fadeOut = new FadeTransition(Duration.millis(500), aboutBackgroundImage);
-            fadeOut.setFromValue(1.0);
-            fadeOut.setToValue(0.0);
-            fadeOut.setOnFinished(e -> {
-                // Remove the about background after fade out completes
-                root.getChildren().remove(aboutBackgroundImage);
-                if (onFinished != null) {
-                    onFinished.run();
-                }
-            });
-            fadeOut.play();
-        } else {
-            if (onFinished != null) {
-                onFinished.run();
-            }
-        }
-    }
-    
-    // Helper method to add elements at the correct z-index
-    private void addAtCorrectZIndex(Pane root, javafx.scene.Node node) {
-        // Find the main background image to add our elements right after it
-        for (int i = 0; i < root.getChildren().size(); i++) {
-            javafx.scene.Node child = root.getChildren().get(i);
-            if (child instanceof ImageView && child != aboutBackgroundImage) {
-                // Add right after the main background
-                root.getChildren().add(i + 1, node);
-                return;
-            }
-        }
-        // Fallback: add at position 1 (after background if it's at 0)
-        if (root.getChildren().size() > 0) {
-            root.getChildren().add(1, node);
-        } else {
-            root.getChildren().add(node);
-        }
-    }
-    
-    public void revertToMainBackground(Pane root, Stage primaryStage) {
-        revertToMainBackground(root, primaryStage, null);
-    }
+   // Store references to all elements we add
+   private List<javafx.scene.Node> aboutElements;
+  
+   public About() {
+       aboutElements = new ArrayList<>();
+   }
+  
+   public void displayAbout(Pane root, Stage primaryStage) {
+       // Clear any previous about elements
+       removeAbout(root);
+      
+       ImageView messageContainer = new ImageView();
+       try {
+           Image block = new Image(getClass().getResourceAsStream("/images/MessageContainer.png"));
+           messageContainer.setImage(block);
+           messageContainer.setPreserveRatio(true);
+           messageContainer.setFitWidth(730);
+       } catch (Exception e) {
+           System.err.println("Logo image not found: " + e.getMessage());
+       }
+       messageContainer.setLayoutX(125);
+       messageContainer.setLayoutY(570);
+       messageContainer.getStyleClass().add("image-with-shadow");
+      
+       ImageView messageContainer1 = new ImageView();
+       try {
+           Image block1 = new Image(getClass().getResourceAsStream("/images/MessageContainer.png"));
+           messageContainer1.setImage(block1);
+           messageContainer1.setPreserveRatio(true);
+           messageContainer1.setFitWidth(730);
+       } catch (Exception e) {
+           System.err.println("Logo image not found: " + e.getMessage());
+       }
+       messageContainer1.setLayoutX(1075);
+       messageContainer1.setLayoutY(570);
+       messageContainer1.getStyleClass().add("image-with-shadow");
+      
+       Label whatIsR = new Label("What is REGICS?");
+       whatIsR.getStyleClass().add("title-text");
+       whatIsR.setLayoutX(820);
+       whatIsR.setLayoutY(370);
+      
+       // Store references to all elements
+       aboutElements.clear();
+       aboutElements.add(messageContainer);
+       aboutElements.add(messageContainer1);
+       aboutElements.add(whatIsR);
+      
+       // Add directly to root
+       root.getChildren().addAll(messageContainer, messageContainer1, whatIsR);
+   }
+  
+   // New method to remove everything added by displayAbout
+   public void removeAbout(Pane root) {
+       if (aboutElements != null && !aboutElements.isEmpty()) {
+           root.getChildren().removeAll(aboutElements);
+           aboutElements.clear();
+       }
+   }
 }
+

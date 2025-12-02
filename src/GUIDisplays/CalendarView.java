@@ -1,5 +1,6 @@
 package GUIDisplays;
 import javafx.animation.FadeTransition;
+import javafx.scene.media.AudioClip;
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
@@ -16,39 +17,62 @@ import components.Course;
 import components.Student;
 import application.Main;
 import java.util.*;
+import java.io.File;
+
 public class CalendarView {
    private Main mainApp;
-  private Student student;
-  private Stage stage;
-  private Set<String> newlyAddedCourses;
+   private Student student;
+   private Stage stage;
+   private Set<String> newlyAddedCourses;
+   private AudioClip flashbangSound;
+   
+   {
+      // Load flashbang sound
+	   try {
+		    File audioFile = new File("src/application/flashbang.mp3");
+		    flashbangSound = new AudioClip(audioFile.toURI().toString());
+		    System.out.println("Loaded successfully!");
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+
+}
+   
    // Sidebar specific variables
-  private static final double SIDEBAR_WIDTH = 300;
-  private Pane dashboardPane;
-  private Pane overlay;
-  private boolean isSidebarOpen = false;
+   private static final double SIDEBAR_WIDTH = 300;
+   private Pane dashboardPane;
+   private Pane overlay;
+   private boolean isSidebarOpen = false;
+   
    // Time slots from 7 AM to 7 PM in 30-minute intervals
-  private static final String[] TIME_SLOTS = {
+   private static final String[] TIME_SLOTS = {
       "7:00", "7:30", "8:00", "8:30", "9:00", "9:30", "10:00", "10:30",
       "11:00", "11:30", "12:00", "12:30", "1:00", "1:30", "2:00", "2:30",
       "3:00", "3:30", "4:00", "4:30", "5:00", "5:30", "6:00", "6:30", "7:00"
-  };
+   };
+   
    private static final String[] TIME_LABELS = {
       "7:00", "8:00", "9:00", "10:00", "11:00", "12:00",
       "1:00", "2:00", "3:00", "4:00", "5:00", "6:00", "7:00"
-  };
+   };
+   
    private static final String[] DAYS = {"Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"};
+   
    public CalendarView(Main mainApp, Student student, Stage stage) {
       this.mainApp = mainApp;
       this.student = student;
       this.stage = stage;
       this.newlyAddedCourses = new HashSet<>();
-  }
+   }
+   
    public void markAsNewlyAdded(Course course) {
       newlyAddedCourses.add(course.getCourseID() + "-" + course.getSection());
-  }
+   }
+   
    public void clearNewlyAdded() {
       newlyAddedCourses.clear();
-  }
+   }
+   
    public Scene createCalendarScene() {
       // 1. Root Container for Layers (Content + Overlay + Sidebar)
       Pane mainRoot = new Pane();
@@ -79,7 +103,7 @@ public class CalendarView {
       HBox legend = createLegend();
       calendarContent.setBottom(legend);
     
-      // 4. Sidebar & Overlay Setup (From LandingPage logic)
+      // 4. Sidebar & Overlay Setup
       overlay = new Pane();
       overlay.prefWidthProperty().bind(mainRoot.widthProperty());
       overlay.prefHeightProperty().bind(mainRoot.heightProperty());
@@ -116,14 +140,15 @@ public class CalendarView {
       }
     
       return scene;
-  }
+   }
+   
    private HBox createTopBar(double screenWidth) {
       HBox topBar = new HBox(20);
       topBar.setPadding(new Insets(15, 30, 15, 30));
       topBar.setAlignment(Pos.CENTER_LEFT);
       topBar.setStyle("-fx-background-color: rgba(5, 11, 20, 0.8); -fx-border-color: rgba(255,255,255,0.1); -fx-border-width: 0 0 1px 0;");
     
-      // --- MENU BUTTON (Replaces Back Button) ---
+      // --- MENU BUTTON ---
       Button menuBtn = new Button("☰");
       menuBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 24px; -fx-cursor: hand;");
       menuBtn.setOnAction(e -> {
@@ -140,9 +165,12 @@ public class CalendarView {
       clearHighlightButton.setStyle("-fx-background-color: rgba(255,255,255,0.1); -fx-text-fill: #bdc3c7; " +
                                    "-fx-font-weight: bold; -fx-padding: 8px 15px; -fx-background-radius: 20px; -fx-cursor: hand;");
       clearHighlightButton.setOnAction(e -> {
+    	  
+    	  if (flashbangSound != null) {
+              flashbangSound.play();
+          }
+    	  
           clearNewlyAdded();
-          // To refresh, we regenerate the scene.
-          // NOTE: In a complex app, we might just refresh the grid, but scene regeneration is safer for state consistency here.
           stage.setScene(createCalendarScene());
           stage.setMaximized(true);
       });
@@ -159,7 +187,8 @@ public class CalendarView {
     
       topBar.getChildren().addAll(menuBtn, titleLabel, spacer, clearHighlightButton, enlistButton);
       return topBar;
-  }
+   }
+   
    // --- SIDEBAR ANIMATION LOGIC ---
    private void openSidebar() {
       if (!isSidebarOpen) {
@@ -170,8 +199,9 @@ public class CalendarView {
           openAnim.play();
           isSidebarOpen = true;
       }
-  }
-  private void closeSidebar() {
+   }
+   
+   private void closeSidebar() {
       if (isSidebarOpen) {
           TranslateTransition closeAnim = new TranslateTransition(Duration.seconds(0.4), dashboardPane);
           closeAnim.setToX(-SIDEBAR_WIDTH);
@@ -180,9 +210,10 @@ public class CalendarView {
           closeAnim.play();
           isSidebarOpen = false;
       }
-  }
-   // --- CALENDAR GRID LOGIC (Unchanged) ---
-  private GridPane createCalendarGrid(double screenWidth) {
+   }
+   
+   // --- CALENDAR GRID LOGIC ---
+   private GridPane createCalendarGrid(double screenWidth) {
       GridPane grid = new GridPane();
       grid.setHgap(5);
       grid.setVgap(0);
@@ -209,7 +240,6 @@ public class CalendarView {
       }
     
       Map<String, CourseTimeSlot> schedule = organizeSchedule();
-      Set<String> collisions = detectCollisions(schedule);
     
       Map<String, Set<Integer>> filledCells = new HashMap<>();
       for (String day : DAYS) filledCells.put(day, new HashSet<>());
@@ -240,9 +270,8 @@ public class CalendarView {
             
               if (schedule.containsKey(dayTimeKey)) {
                   CourseTimeSlot slot = schedule.get(dayTimeKey);
-                  boolean hasCollision = collisions.contains(dayTimeKey);
                 
-                  VBox cell = createMergedCell(slot, hasCollision, dayColWidth);
+                  VBox cell = createMergedCell(slot, dayColWidth);
                   grid.add(cell, dayIdx + 1, gridRow);
                   GridPane.setRowSpan(cell, slot.durationSlots);
                 
@@ -261,7 +290,8 @@ public class CalendarView {
       }
     
       return grid;
-  }
+   }
+   
    private void addHoverAnimation(VBox cell) {
       ScaleTransition st = new ScaleTransition(Duration.millis(150), cell);
       cell.setOnMouseEntered(e -> {
@@ -275,8 +305,9 @@ public class CalendarView {
           st.setToY(1.0);
           st.playFromStart();
       });
-  }
-  private class CourseTimeSlot {
+   }
+   
+   private class CourseTimeSlot {
       Course course;
       int durationSlots;
     
@@ -284,7 +315,8 @@ public class CalendarView {
           this.course = course;
           this.durationSlots = durationSlots;
       }
-  }
+   }
+   
    private Map<String, CourseTimeSlot> organizeSchedule() {
       Map<String, CourseTimeSlot> schedule = new HashMap<>();
     
@@ -318,8 +350,9 @@ public class CalendarView {
           }
       }
       return schedule;
-  }
-   private VBox createMergedCell(CourseTimeSlot slot, boolean hasCollision, double width) {
+   }
+   
+   private VBox createMergedCell(CourseTimeSlot slot, double width) {
       Course course = slot.course;
       String courseKey = course.getCourseID() + "-" + course.getSection();
       boolean isNew = newlyAddedCourses.contains(courseKey);
@@ -333,28 +366,19 @@ public class CalendarView {
       String bgStyle;
       String borderStyle;
     
-      if (hasCollision) {
-          bgStyle = "-fx-background-color: linear-gradient(to bottom right, #c0392b, #e74c3c);";
-          borderStyle = "-fx-border-color: #ffadad; -fx-border-width: 2px;";
-      } else if (isNew) {
+      if (isNew) {
           bgStyle = "-fx-background-color: linear-gradient(to bottom right, #27ae60, #2ecc71);";
           borderStyle = "-fx-border-color: #a8eaff; -fx-border-width: 2px; -fx-effect: dropshadow(gaussian, #2ecc71, 10, 0.4, 0, 0);";
+          
+          Label badge = new Label("★ NEW");
+          badge.setStyle("-fx-font-size: 9px; -fx-text-fill: #27ae60; -fx-background-color: white; -fx-padding: 1 4; -fx-background-radius: 2; -fx-font-weight: bold;");
+          cell.getChildren().add(badge);
       } else {
           bgStyle = "-fx-background-color: linear-gradient(to bottom right, #2980b9, #3498db);";
           borderStyle = "-fx-border-color: rgba(255,255,255,0.2); -fx-border-width: 1px;";
       }
     
       cell.setStyle(bgStyle + borderStyle);
-    
-      if (hasCollision) {
-          Label badge = new Label("⚠ CONFLICT");
-          badge.setStyle("-fx-font-size: 9px; -fx-text-fill: #c0392b; -fx-background-color: white; -fx-padding: 1 4; -fx-background-radius: 2; -fx-font-weight: bold;");
-          cell.getChildren().add(badge);
-      } else if (isNew) {
-          Label badge = new Label("★ NEW");
-          badge.setStyle("-fx-font-size: 9px; -fx-text-fill: #27ae60; -fx-background-color: white; -fx-padding: 1 4; -fx-background-radius: 2; -fx-font-weight: bold;");
-          cell.getChildren().add(badge);
-      }
     
       Label idLabel = new Label(course.getCourseID());
       idLabel.getStyleClass().add("course-card-title");
@@ -376,13 +400,15 @@ public class CalendarView {
       Tooltip.install(cell, tooltip);
     
       return cell;
-  }
+   }
+   
    private VBox createEmptyCell(int height, double width) {
       VBox cell = new VBox();
       cell.setPrefSize(width, height);
       cell.getStyleClass().add("calendar-empty-cell");
       return cell;
-  }
+   }
+   
    private HBox createLegend() {
       HBox legend = new HBox(30);
       legend.setPadding(new Insets(15));
@@ -394,11 +420,11 @@ public class CalendarView {
     
       HBox regularItem = createLegendItem("#2980b9", "Enlisted Course");
       HBox newItem = createLegendItem("#2ecc71", "Newly Added");
-      HBox collisionItem = createLegendItem("#e74c3c", "Schedule Conflict");
     
-      legend.getChildren().addAll(legendTitle, regularItem, newItem, collisionItem);
+      legend.getChildren().addAll(legendTitle, regularItem, newItem);
       return legend;
-  }
+   }
+   
    private HBox createLegendItem(String color, String text) {
       HBox item = new HBox(8);
       item.setAlignment(Pos.CENTER_LEFT);
@@ -412,8 +438,9 @@ public class CalendarView {
     
       item.getChildren().addAll(colorBox, label);
       return item;
-  }
-  // --- PARSING HELPERS ---
+   }
+   
+   // --- PARSING HELPERS ---
    private List<String> parseDays(String days) {
       List<String> result = new ArrayList<>();
       if (days == null) return result;
@@ -435,13 +462,15 @@ public class CalendarView {
           if (!result.contains("Fri")) result.add("Fri");
       }
       return result;
-  }
+   }
+   
    private String parseStartTime(String time) {
       if (time.contains("-")) {
           return time.split("-")[0].trim();
       }
       return time;
-  }
+   }
+   
    private int calculateDuration(String time) {
       if (!time.contains("-")) return 2;
       try {
@@ -464,7 +493,8 @@ public class CalendarView {
       } catch (Exception e) {
           return 2;
       }
-  }
+   }
+   
    private int parseTimeToMinutes(String timeStr, boolean isEndTime) {
       String[] parts = timeStr.split(":");
       int hour = Integer.parseInt(parts[0]);
@@ -475,39 +505,9 @@ public class CalendarView {
       else if (hour == 7 && isEndTime) hour += 12;
     
       return hour * 60 + minute;
-  }
-   private Set<String> detectCollisions(Map<String, CourseTimeSlot> schedule) {
-      Set<String> collisions = new HashSet<>();
-      for (String day : DAYS) {
-          List<CourseTimeSlot> dayCourses = new ArrayList<>();
-          List<Integer> startIndices = new ArrayList<>();
-        
-          for (Map.Entry<String, CourseTimeSlot> entry : schedule.entrySet()) {
-              String key = entry.getKey();
-              if (key.startsWith(day + "-")) {
-                  int startIdx = Integer.parseInt(key.substring(key.indexOf("-") + 1));
-                  dayCourses.add(entry.getValue());
-                  startIndices.add(startIdx);
-              }
-          }
-        
-          for (int i = 0; i < dayCourses.size(); i++) {
-              int start1 = startIndices.get(i);
-              int end1 = start1 + dayCourses.get(i).durationSlots;
-            
-              for (int j = i + 1; j < dayCourses.size(); j++) {
-                  int start2 = startIndices.get(j);
-                  int end2 = start2 + dayCourses.get(j).durationSlots;
-                
-                  if ((start1 < end2) && (start2 < end1)) {
-                      collisions.add(day + "-" + start1);
-                      collisions.add(day + "-" + start2);              
-                  }
-              }
-          }
-      }
-      return collisions;
-  }
+   }
+   
+   // --- CONFLICT DETECTION (Used by EnlistmentUI) ---
    public boolean hasTimeConflict(Course newCourse) {
       String newDays = newCourse.getDays();
       String newTime = newCourse.getTime();
@@ -529,35 +529,32 @@ public class CalendarView {
       int newEndIndex = newStartIndex + newDuration;
     
       for (Course existing : student.getCoursesTaken()) {
-           String existingDays = existing.getDays();
-           String existingTime = existing.getTime();
-           if (existingDays == null || existingTime == null || existingDays.equals("TBA") || existingTime.equals("TBA")) continue;
+          String existingDays = existing.getDays();
+          String existingTime = existing.getTime();
+          if (existingDays == null || existingTime == null || existingDays.equals("TBA") || existingTime.equals("TBA")) continue;
          
-           List<String> existingDaysList = parseDays(existingDays);
-           String existingStartTime = parseStartTime(existingTime);
-           int existingDuration = calculateDuration(existingTime);
+          List<String> existingDaysList = parseDays(existingDays);
+          String existingStartTime = parseStartTime(existingTime);
+          int existingDuration = calculateDuration(existingTime);
          
-           int existingStartIndex = -1;
-           for (int i = 0; i < TIME_SLOTS.length; i++) {
-               if (TIME_SLOTS[i].equals(existingStartTime)) {
-                   existingStartIndex = i;
-                   break;
-               }
-           }
-           if (existingStartIndex < 0) continue;
-           int existingEndIndex = existingStartIndex + existingDuration;
+          int existingStartIndex = -1;
+          for (int i = 0; i < TIME_SLOTS.length; i++) {
+              if (TIME_SLOTS[i].equals(existingStartTime)) {
+                  existingStartIndex = i;
+                  break;
+              }
+          }
+          if (existingStartIndex < 0) continue;
+          int existingEndIndex = existingStartIndex + existingDuration;
          
-           for (String newDay : newDaysList) {
-               if (existingDaysList.contains(newDay)) {
-                   if (newStartIndex < existingEndIndex && existingStartIndex < newEndIndex) {
-                       return true;
-                   }
-               }
-           }
+          for (String newDay : newDaysList) {
+              if (existingDaysList.contains(newDay)) {
+                  if (newStartIndex < existingEndIndex && existingStartIndex < newEndIndex) {
+                      return true;
+                  }
+              }
+          }
       }
       return false;
-  }
+   }
 }
-
-
-

@@ -269,31 +269,22 @@ public class Main extends Application {
        });
    }
   
-   public void setLogin(boolean loginStatus, User user) {
-       this.isLogin = loginStatus;
-       this.currentUser = user;
-    
-       if (isLogin && user != null) {
-           // User logging in
-           root.getChildren().removeIf(node ->
-               node == Login || node == welcomeText || node == abbrievText
-           );
-           displayLandingPage();
-       } else {
-           // User logged out - restore main display properly
-           isLogin = false;
-           currentUser = null;
-          
-           // Clear and rebuild
-           root.getChildren().clear();
-           displayMain(root, primaryStage);
-          
-           // Update positions after rendering
-           javafx.application.Platform.runLater(() -> {
-               updatePositions(root);
-           });
-       }
-   }
+    public void setLogin(boolean loginStatus, User user) {
+        this.isLogin = loginStatus;
+        this.currentUser = user;
+
+        if (isLogin && user != null) {
+            // User logging in
+            root.getChildren().removeIf(node ->
+                node == Login || node == welcomeText || node == abbrievText
+            );
+            displayLandingPage();
+        } else {
+            // User logged out - just call restoreMainDisplay
+            restoreMainDisplay(null);
+        }
+    }
+
   
    private void displayLandingPage() {
        // Pass the Main instance and the current user so the landing page and dashboard
@@ -326,40 +317,43 @@ public class Main extends Application {
        }
     }
     public void restoreMainDisplay(Pane root) {
-        // Always restore the application's primary main root so the Login button and main UI are consistent.
-        // Ignore the passed-in root if it's different from the app root.
-        Pane targetRoot = this.root;
-
-        // If the stage currently shows a different root, replace the scene so the app's main root is used.
-        if (primaryStage != null) {
-            Scene currentScene = primaryStage.getScene();
-            if (currentScene == null || currentScene.getRoot() != targetRoot) {
-                javafx.geometry.Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-                Scene newScene = new Scene(targetRoot, screenBounds.getWidth(), screenBounds.getHeight());
-                try {
-                    newScene.getStylesheets().add(getClass().getResource("/application/application.css").toExternalForm());
-                } catch (Exception ex) { /* ignore */ }
-                primaryStage.setScene(newScene);
-            }
-        }
-
-        // Clear and rebuild the main root contents
-        targetRoot.getChildren().clear();
-        displayMain(targetRoot, primaryStage);
-
-        // Reset login state
+        // Reset state first
         isLogin = false;
         currentUser = null;
         isAboutPageDisplayed = false;
+        isCreditsPageDisplayed = false;
         landingPage = null;
 
-        // Force a layout pass and update positions after rendering
-        javafx.application.Platform.runLater(() -> {
-            // Apply CSS and layout to ensure proper width/height calculations
-            targetRoot.applyCss();
-            targetRoot.layout();
+        // Create a COMPLETELY NEW root Pane (don't reuse this.root)
+        Pane newRoot = new Pane();
+        
+        // Update the app's main root reference
+        this.root = newRoot;
 
-            // Force layout on text elements
+        // Create new Scene with the new root
+        javafx.geometry.Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        Scene newScene = new Scene(newRoot, screenBounds.getWidth(), screenBounds.getHeight());
+        
+        // Add CSS
+        try {
+            newScene.getStylesheets().add(
+                getClass().getResource("/application/application.css").toExternalForm()
+            );
+        } catch (Exception ex) {
+            System.err.println("CSS not found");
+        }
+
+        // Set the new scene to the stage
+        primaryStage.setScene(newScene);
+
+        // Now build the main display on the new root
+        displayMain(newRoot, primaryStage);
+
+        // Update positions after rendering
+        javafx.application.Platform.runLater(() -> {
+            newRoot.applyCss();
+            newRoot.layout();
+
             if (welcomeText != null) {
                 welcomeText.applyCss();
                 welcomeText.layout();
@@ -369,10 +363,12 @@ public class Main extends Application {
                 abbrievText.layout();
             }
 
-            // Update positions with proper measurements
-            updatePositions(targetRoot);
+            updatePositions(newRoot);
         });
+        
+        primaryStage.setMaximized(true);
     }
+
     private static void loadDegreePrograms() {
        System.out.println("Loading degree programs...");
       

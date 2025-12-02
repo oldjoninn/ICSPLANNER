@@ -160,7 +160,9 @@ public class LandingPage {
        titleLine2.setMaxWidth(1000);
        titleLine2.prefWidthProperty().bind(viewContainer.widthProperty());
       
-       Label subtitle = new Label("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do\neiusmod tempor incididunt ut labore et dolore magna aliqua.");
+       Label subtitle = new Label("Take control of your academic future. Map out your courses, visualize your \r\n"
+       		+ "degree progress, and stay on track to graduation with intelligent planning tools.\r\n"
+       		+ "");
        subtitle.getStyleClass().add("subtitle-text");
        subtitle.setWrapText(true);
        subtitle.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
@@ -395,12 +397,12 @@ public class LandingPage {
        }
       
        if (creditsBtn != null) {
-           creditsBtn.setLayoutX(1200); // Adjusted from 200
+           creditsBtn.setLayoutX(830); 
            creditsBtn.setLayoutY(50);
        }
       
        if (logoutBtn != null) {
-           logoutBtn.setLayoutX(1700);
+           logoutBtn.setLayoutX(1400); 
            logoutBtn.setLayoutY(50);
        }
       

@@ -190,7 +190,7 @@ public class CourseCatalog {
        }
    }
    private void loadCatalogCourses() {
-       String csvPath = "src/application/course_offerings.csv";
+       String csvPath = "src/application/ics_courses_sorted_custom.csv";
        List<Course> loadedCourses = application.CSVReader.readProgramCourses(csvPath, null);
        if (loadedCourses != null) {
            catalogCourses.addAll(loadedCourses);

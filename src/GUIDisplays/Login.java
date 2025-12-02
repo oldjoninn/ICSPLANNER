@@ -42,7 +42,7 @@ public class Login {
         // Close Button
         Button closeButton = new Button("X");
         closeButton.getStyleClass().add("close-button");
-        closeButton.setLayoutX(1265);
+        closeButton.setLayoutX(1165);
         closeButton.setLayoutY(345);
         closeButton.setOnAction(e -> {
             root.getChildren().remove(positionedContainer);
@@ -51,41 +51,41 @@ public class Login {
    
         Label loginText = new Label("Login to continue.");
         loginText.getStyleClass().add("title-text");
-        loginText.setLayoutX(635);
+        loginText.setLayoutX(450);
         loginText.setLayoutY(370);
       
         Label email = new Label("email");
         email.getStyleClass().add("normal-login-text");
-        email.setLayoutX(637);
+        email.setLayoutX(450);
         email.setLayoutY(430);
       
         Label password = new Label("password");
         password.getStyleClass().add("normal-login-text");
-        password.setLayoutX(637);
+        password.setLayoutX(450);
         password.setLayoutY(515);
  
         TextField txtEmail = new TextField();
         PasswordField txtPassword = new PasswordField();
-        txtEmail.setLayoutX(637);
+        txtEmail.setLayoutX(450);
         txtEmail.setLayoutY(445);
-        txtPassword.setLayoutX(637);
+        txtPassword.setLayoutX(450);
         txtPassword.setLayoutY(530);
  
         txtEmail.getStyleClass().add("transparent-field");
         txtPassword.getStyleClass().add("transparent-field");
  
         Button btnLogin = new Button("LOGIN");
-        btnLogin.setLayoutX(720);
+        btnLogin.setLayoutX(550);
         btnLogin.setLayoutY(646);
         btnLogin.getStyleClass().add("diagonal-gradient-btn");
   
         Label dhaaText = new Label("Dont have an acount?");
         dhaaText.getStyleClass().add("normal-login-text");
-        dhaaText.setLayoutX(670);
+        dhaaText.setLayoutX(500);
         dhaaText.setLayoutY(724);
       
         Button register = new Button("Register now.");
-        register.setLayoutX(790);
+        register.setLayoutX(625);
         register.setLayoutY(721);
         register.getStyleClass().add("hyperlink-btn");
   
@@ -123,7 +123,7 @@ public class Login {
                 
                 if (mainApp != null) {
                     Admin admin = new Admin();
-                    mainApp.setLogin(true, admin);
+                    mainApp.setLogin(true, admin); 
                 }
                 
                 primaryStage.setMaximized(true);

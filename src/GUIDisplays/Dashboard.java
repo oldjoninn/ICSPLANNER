@@ -54,7 +54,7 @@ public class Dashboard {
        String firstName = (currentUser != null) ? currentUser.getFirstName() : "User";
        String lastName = (currentUser != null) ? currentUser.getLastName() : "Name";
        String email = (currentUser != null) ? currentUser.getEmail() : "email@gmail.com";
-       Label nameLabel = new Label("[ " + firstName + " ] [ " + lastName + " ]");
+       Label nameLabel = new Label( firstName  + " "+ lastName );
        nameLabel.getStyleClass().add("user-name");
        Label emailLabel = new Label(email);
        emailLabel.getStyleClass().add("user-email");
@@ -69,11 +69,11 @@ public class Dashboard {
        menuContainer.setLayoutX(20);
        menuContainer.setLayoutY(200);
    
-       Button btnDashboard = createMenuItem("⌂", "Dashboard");
+       Button btnDashboard = createMenuItem("🏠", "Dashboard");
        btnDashboard.setOnAction(e -> {
            if (mainApp != null) {
              
-               Pane mainRoot = new Pane();
+               Pane mainRoot = new Pane(); 
                LandingPage landing = new LandingPage(mainApp, currentUser);
                landing.displayLandingPage(mainRoot, primaryStage);
               

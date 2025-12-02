@@ -187,11 +187,15 @@ public class AdminDashboard {
             // Navigate back to landing page
             if (mainApp != null) {
                 Pane mainRoot = new Pane();
-                Admin admin = new Admin();
-                LandingPage landingPage = new LandingPage(mainApp, admin);
+                // Prefer the current logged-in user; fall back to an Admin wrapper if none available
+                components.User currentUser = mainApp.getCurrentUser();
+                if (currentUser == null) currentUser = new Admin();
+                LandingPage landingPage = new LandingPage(mainApp, currentUser);
                 landingPage.displayLandingPage(mainRoot, stage);
                 
-                Scene scene = new Scene(mainRoot, 1200, 700);
+                // Use screen visual bounds to size the scene so it fills the screen
+                javafx.geometry.Rectangle2D screenBounds = javafx.stage.Screen.getPrimary().getVisualBounds();
+                Scene scene = new Scene(mainRoot, screenBounds.getWidth(), screenBounds.getHeight());
                 try {
                     scene.getStylesheets().add(getClass().getResource("/application/application.css").toExternalForm());
                 } catch (Exception ex) {

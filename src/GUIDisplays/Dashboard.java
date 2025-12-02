@@ -77,11 +77,14 @@ public class Dashboard {
                LandingPage landing = new LandingPage(mainApp, currentUser);
                landing.displayLandingPage(mainRoot, primaryStage);
               
-               Scene scene = new Scene(mainRoot, 1200, 700);
+               // Size to screen visual bounds so it fills the display and maximize
+               javafx.geometry.Rectangle2D screenBounds = javafx.stage.Screen.getPrimary().getVisualBounds();
+               Scene scene = new Scene(mainRoot, screenBounds.getWidth(), screenBounds.getHeight());
                try {
                    scene.getStylesheets().add(getClass().getResource("/application/application.css").toExternalForm());
                } catch (Exception ex) {}
                primaryStage.setScene(scene);
+               primaryStage.setMaximized(true);
            }
        });
        menuContainer.getChildren().add(btnDashboard);
@@ -125,7 +128,16 @@ public class Dashboard {
        } else if (currentUser instanceof Admin || (currentUser != null && "Admin".equalsIgnoreCase(currentUser.getUserType()))) {
            Button btnCatalogue = createMenuItem("📂", "Academic View Catalogue");
            btnCatalogue.setOnAction(e -> {
-              
+              System.out.println("[Dashboard] Academic View Catalogue clicked by user: " + (currentUser != null ? currentUser.getEmail() : "null"));
+               // Ensure Main knows admin is logged in so landing page and navigation work correctly
+               if (mainApp != null) {
+                   mainApp.setLogin(true, currentUser);
+               }
+               if (primaryStage != null) {
+                  System.out.println("[Dashboard] Opening AdminDashboard...");
+                   AdminDashboard adminDash = new AdminDashboard(primaryStage, Main.courseOfferings, mainApp);
+                   adminDash.show();
+               }
            });
            menuContainer.getChildren().add(btnCatalogue);
        }
@@ -149,6 +161,3 @@ public class Dashboard {
        return btn;
    }
 }
-
-
-

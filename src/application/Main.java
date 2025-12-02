@@ -106,9 +106,11 @@ public class Main extends Application {
        fadeIn2.setFromValue(0.0); fadeIn2.setToValue(1.0); fadeIn2.play();
     
        Login = new Button("Login");
-       Login.setLayoutX(1700);
+       // Position login responsively via updatePositions (avoids persistent bindings that may move it off-screen)
        Login.setLayoutY(50);
-       Login.getStyleClass().add("main-login-btn");
+       // set a safe default X; final X is set in updatePositions
+       Login.setLayoutX(0);
+        Login.getStyleClass().add("main-login-btn");
     
        Button Home = new Button("Home");
        Home.setLayoutX(665);
@@ -310,44 +312,67 @@ public class Main extends Application {
        welcomeText.setLayoutY((root.getHeight() - welcomeText.getHeight()) / 2);
        abbrievText.setLayoutX((root.getWidth() - abbrievText.getWidth()) / 2);
        abbrievText.setLayoutY(550);
-   }
+      // Position the Login button reliably near the right edge with a minimum margin
+      if (Login != null) {
+          double x = root.getWidth() - 180;
+          if (x < 20) x = 20; // ensure button isn't off-screen on narrow windows
+          Login.setLayoutX(x);
+      }
+    }
     private void revertToMainBackground() {
        // No longer needed - kept for compatibility
        if (!root.getChildren().contains(mainBackgroundImage)) {
            root.getChildren().add(0, mainBackgroundImage);
        }
-   }
+    }
     public void restoreMainDisplay(Pane root) {
-       // Clear everything and redisplay main
-       root.getChildren().clear();
-       displayMain(root, primaryStage);
-      
-       // Reset login state
-       isLogin = false;
-       currentUser = null;
-       isAboutPageDisplayed = false;
-       landingPage = null;
-      
-       // Force a layout pass and update positions after rendering
-       javafx.application.Platform.runLater(() -> {
-           // Apply CSS and layout to ensure proper width/height calculations
-           root.applyCss();
-           root.layout();
-          
-           // Force layout on text elements
-           if (welcomeText != null) {
-               welcomeText.applyCss();
-               welcomeText.layout();
-           }
-           if (abbrievText != null) {
-               abbrievText.applyCss();
-               abbrievText.layout();
-           }
-          
-           // Update positions with proper measurements
-           updatePositions(root);
-       });
-   }
+        // Always restore the application's primary main root so the Login button and main UI are consistent.
+        // Ignore the passed-in root if it's different from the app root.
+        Pane targetRoot = this.root;
+
+        // If the stage currently shows a different root, replace the scene so the app's main root is used.
+        if (primaryStage != null) {
+            Scene currentScene = primaryStage.getScene();
+            if (currentScene == null || currentScene.getRoot() != targetRoot) {
+                javafx.geometry.Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+                Scene newScene = new Scene(targetRoot, screenBounds.getWidth(), screenBounds.getHeight());
+                try {
+                    newScene.getStylesheets().add(getClass().getResource("/application/application.css").toExternalForm());
+                } catch (Exception ex) { /* ignore */ }
+                primaryStage.setScene(newScene);
+            }
+        }
+
+        // Clear and rebuild the main root contents
+        targetRoot.getChildren().clear();
+        displayMain(targetRoot, primaryStage);
+
+        // Reset login state
+        isLogin = false;
+        currentUser = null;
+        isAboutPageDisplayed = false;
+        landingPage = null;
+
+        // Force a layout pass and update positions after rendering
+        javafx.application.Platform.runLater(() -> {
+            // Apply CSS and layout to ensure proper width/height calculations
+            targetRoot.applyCss();
+            targetRoot.layout();
+
+            // Force layout on text elements
+            if (welcomeText != null) {
+                welcomeText.applyCss();
+                welcomeText.layout();
+            }
+            if (abbrievText != null) {
+                abbrievText.applyCss();
+                abbrievText.layout();
+            }
+
+            // Update positions with proper measurements
+            updatePositions(targetRoot);
+        });
+    }
     private static void loadDegreePrograms() {
        System.out.println("Loading degree programs...");
       
@@ -382,6 +407,3 @@ public class Main extends Application {
        launch();
    }
 }
-
-
-

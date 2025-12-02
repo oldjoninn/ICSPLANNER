@@ -98,9 +98,7 @@ public class AdminDashboard {
     public void show() {
         // Main container with modern dark gradient background
         BorderPane root = new BorderPane();
-        root.setStyle(
-            "-fx-background-color: linear-gradient(to bottom, #050816, #0a1128);"
-        );
+        root.getStyleClass().add("calendar-view"); // Use centralized dark gradient theme
         
         // Top Bar
         HBox topBar = createTopBar();
@@ -110,7 +108,9 @@ public class AdminDashboard {
         VBox centerContent = createCenterContent();
         root.setCenter(centerContent);
         
-        Scene scene = new Scene(root, 1400, 700);
+        // Get screen dimensions for full screen
+        javafx.geometry.Rectangle2D screenBounds = javafx.stage.Screen.getPrimary().getVisualBounds();
+        Scene scene = new Scene(root, screenBounds.getWidth(), screenBounds.getHeight());
         
         // Load CSS
         try {

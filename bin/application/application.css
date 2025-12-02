@@ -1,450 +1,533 @@
-/* ============================================================================
-   REGICS - Centralized UI Theme
-   Dark Blue Gradient Theme with Cyan Accents
-   ============================================================================ */
-
-/* --- ROOT & BACKGROUNDS --- */
-.root-pane, .root {
-    -fx-background-color: 
-        radial-gradient(focus-angle 0deg, focus-distance 0%, center 25% 25%, radius 50%, rgba(30, 60, 160, 0.3), transparent),
-        radial-gradient(focus-angle 0deg, focus-distance 0%, center 75% 75%, radius 40%, rgba(70, 140, 250, 0.2), transparent),
-        #050b14;
+/* Main background for the StackPane */
+.root-pane {
+  -fx-background-color: linear-gradient(to bottom, #87CEEB, #4682B4);
 }
-
-/* Calendar, Enlistment, and other views with dark gradient */
-.calendar-view, .enlistment-view {
-    -fx-background-color: linear-gradient(to bottom, #050816, #0a1128);
-}
-
-/* --- TYPOGRAPHY --- */
-.welcome-text {
-    -fx-font-family: "Arial";
-    -fx-font-size: 40px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #c4d0e6;
-    -fx-effect: dropshadow(gaussian, #1d223a, 10, 0.2, 0, 0);
-}
-
-.title-textt {
-    -fx-font-family: "Arial", sans-serif;
-    -fx-font-size: 72px;
-    -fx-font-weight: bold;
-    -fx-text-fill: white;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 15, 0, 0, 5);
-    -fx-padding: 0 0 -15 0;
-}
-
-.title-text-flow {
-    -fx-font-family: "Arial", sans-serif;
-    -fx-font-size: 72px;
-    -fx-font-weight: bold;
-    -fx-fill: white;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 15, 0, 0, 5);
-}
-
-.highlightt-textt {
-    -fx-font-family: "Arial";
-    -fx-font-style: oblique 20deg;
-    -fx-font-size: 72px;
-    -fx-fill: #5E9EFF;
-}
-
-.subtitle-text {
-    -fx-font-family: "Arial", sans-serif;
-    -fx-font-size: 18px;
-    -fx-text-fill: #b0b0b0;
-    -fx-text-alignment: center;
-    -fx-padding: 25 0 0 0;
-}
-
-.title-text {
-    -fx-font-family: "Arial";
-    -fx-font-size: 33px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #c4d0e6;
-}
-
-.abbriev-text, .normal-login-text {
-    -fx-font-family: "Arial";
-    -fx-font-size: 12px;
-    -fx-text-fill: #c4d0e6;
-}
-
-.error-text {
-    -fx-font-family: "Arial";
-    -fx-font-size: 12px;
-    -fx-text-fill: #a63c2e;
-}
-
-.section-label {
-    -fx-text-fill: white;
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
-    -fx-font-family: 'Arial', sans-serif;
-}
-
-/* --- BUTTONS --- */
-.main-login-btn {
-    -fx-background-color: transparent;
-    -fx-border-color: linear-gradient(from 0% 0% to 100% 100%, #73deff, #4973f1);
-    -fx-border-radius: 25px;
-    -fx-text-fill: linear-gradient(from 0% 0% to 100% 100%, #73deff, #4973f1);
-    -fx-font-size: 12px;
-    -fx-font-weight: bold;
-    -fx-padding: 3 5 3 5;
-    -fx-cursor: hand;
-    -fx-pref-width: 60px;
-    -fx-pref-height: 1px;
-}
-
-.main-btns {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-    -fx-text-fill: #c4d0e6;
-    -fx-font-size: 12px;
-    -fx-font-weight: bold;
-    -fx-padding: 3 5 3 5;
-    -fx-cursor: hand;
-    -fx-pref-width: 60px;
-    -fx-pref-height: 1px;
-}
-
-.diagonal-gradient-btn {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #73deff, #4973f1);
-    -fx-text-fill: #1d223a;
-    -fx-font-weight: bold;
-    -fx-font-size: 17px;
-    -fx-background-radius: 5px;
-    -fx-border-radius: 2px;
-    -fx-padding: 2 3 2 3;
-    -fx-pref-width: 95px;
-    -fx-pref-height: 15px;
-    -fx-cursor: hand;
-}
-
-.hyperlink-btn {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-    -fx-text-fill: #73deff;
-    -fx-underline: true;
-    -fx-font-size: 12px;
-    -fx-padding: 1 3 1 3;
-    -fx-cursor: hand;
-}
-
-.announcements-button, .image-button {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-    -fx-border-radius: 30px;
-    -fx-border-width: 2px;
-    -fx-text-fill: white;
-    -fx-font-family: "Arial", sans-serif;
-    -fx-font-weight: bold;
-    -fx-font-size: 16px;
-    -fx-padding: 10px 30px;
-    -fx-cursor: hand;
-    -fx-alignment: center;
-}
-
-.announcements-button:hover, .image-button:hover {
-    -fx-border-color: #5E9EFF;
-    -fx-text-fill: #5E9EFF;
-    -fx-background-color: rgba(94, 158, 255, 0.1);
-    -fx-effect: dropshadow(gaussian, rgba(94, 158, 255, 0.5), 15, 0, 0, 0);
-}
-
-.announcements-button:pressed, .image-button:pressed {
-    -fx-background-color: rgba(94, 158, 255, 0.2);
-    -fx-scale-x: 0.98;
-    -fx-scale-y: 0.98;
-}
-
-.action-btn {
-    -fx-background-color: linear-gradient(to right, #73deff, #4973f1);
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-font-size: 14px;
-    -fx-padding: 8px 16px;
-    -fx-cursor: hand;
-    -fx-background-radius: 8px;
-}
-
-.action-btn:hover {
-    -fx-background-color: linear-gradient(to right, #8ae5ff, #6a8ff5);
-}
-
-.close-button {
-    -fx-background-color: rgba(255, 255, 255, 0.1);
-    -fx-text-fill: #ffffff;
-    -fx-font-size: 12px;
-    -fx-font-weight: bold;
-    -fx-border-radius: 100px;
-    -fx-background-radius: 100px;
-    -fx-pref-width: 30px;
-    -fx-pref-height: 30px;
-    -fx-cursor: hand;
-}
-
-.close-button:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.2);
-    -fx-text-fill: #73deff;
-}
-
-.close-button:pressed {
-    -fx-background-color: rgba(255, 68, 68, 0.3);
-}
-
-/* --- FORM FIELDS --- */
-.transparent-field, .search-field {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent transparent #5d6378 transparent;
-    -fx-border-width: 0.5px;
-    -fx-padding: 0 0 1px 0;
-    -fx-font-family: "Arial";
-    -fx-font-size: 14px;
-    -fx-text-fill: white;
-    -fx-pref-width: 280px;
-    -fx-pref-height: 50px;
-}
-
-.transparent-field:focused, .search-field:focused {
-    -fx-border-color: transparent transparent #c2dfe8 transparent;
-    -fx-border-width: 0.5px;
-    -fx-effect: dropshadow(gaussian, #c2dfe8, 1, 0.5, 0, 0);
-}
-
-/* --- COMBO BOX --- */
-.combo-box .list-cell {
-    -fx-background-color: #1d223a;
-    -fx-text-fill: white;
-    -fx-pref-width: 262px;
-}
-
-.combo-box .list-view {
-    -fx-background-color: #1d223a;
-}
-
-.combo-box:disabled {
-    -fx-opacity: 0.5;
-}
-
-.combo-box .arrow-button {
-    -fx-background-color: #c4d0e6;
-}
-
-.combo-box .arrow {
-    -fx-background-color: #1d223a;
-}
-
-/* --- DASHBOARD SIDEBAR --- */
-.dashboard-root {
-    -fx-background-color: #050816;
-    -fx-border-color: transparent rgba(255, 255, 255, 0.1) transparent transparent;
-    -fx-border-width: 1px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 15, 0, 5, 0);
-}
-
-.user-name {
-    -fx-text-fill: white;
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-font-family: 'Arial', sans-serif;
-}
-
-.user-email {
-    -fx-text-fill: #94a3b8;
-    -fx-font-size: 14px;
-    -fx-font-style: italic;
-    -fx-font-family: 'Arial', sans-serif;
-}
-
-.separator-line {
-    -fx-stroke: rgba(255, 255, 255, 0.1);
-}
-
-.menu-item {
-    -fx-background-color: transparent;
-    -fx-cursor: hand;
-    -fx-padding: 10px 0;
-}
-
-.menu-item:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.05);
-    -fx-background-radius: 10px;
-}
-
-.menu-icon {
-    -fx-text-fill: white;
-    -fx-font-size: 20px;
-    -fx-font-weight: bold;
-    -fx-min-width: 30px;
-    -fx-alignment: center;
-}
-
-.menu-text {
-    -fx-text-fill: white;
-    -fx-font-size: 16px;
-    -fx-font-family: 'Arial', sans-serif;
-    -fx-font-weight: 600;
-}
-
-/* --- TABLES --- */
-.styled-table {
-    -fx-background-color: rgba(18, 24, 43, 0.6);
-    -fx-background-radius: 15px;
-    -fx-border-color: rgba(115, 222, 255, 0.3);
-    -fx-border-radius: 15px;
-    -fx-border-width: 1px;
-}
-
-.styled-table .column-header {
-    -fx-background-color: rgba(30, 41, 59, 0.8);
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-font-size: 13px;
-}
-
-.styled-table .table-row-cell {
-    -fx-background-color: transparent;
-    -fx-text-fill: white;
-}
-
-.styled-table .table-row-cell:selected {
-    -fx-background-color: rgba(115, 222, 255, 0.2);
-}
-
-.styled-table .table-row-cell:hover {
-    -fx-background-color: rgba(115, 222, 255, 0.1);
-}
-
-/* --- CALENDAR SPECIFIC --- */
-.calendar-header-label {
-    -fx-background-color: rgba(30, 41, 59, 0.8);
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-font-size: 13px;
-    -fx-border-color: rgba(115, 222, 255, 0.3);
-    -fx-border-width: 1px;
-    -fx-background-radius: 5px;
-}
-
-.calendar-time-label {
-    -fx-background-color: rgba(18, 24, 43, 0.6);
-    -fx-text-fill: #94a3b8;
-    -fx-font-size: 11px;
-    -fx-font-weight: 600;
-    -fx-border-color: rgba(255, 255, 255, 0.1);
-    -fx-border-width: 0.5px;
-}
-
-.calendar-empty-cell {
-    -fx-background-color: rgba(18, 24, 43, 0.3);
-    -fx-border-color: rgba(255, 255, 255, 0.05);
-    -fx-border-width: 0.5px;
-}
-
-.course-card {
-    -fx-background-radius: 8px;
-}
-
-.course-card-title {
-    -fx-font-size: 13px;
-    -fx-font-weight: bold;
-}
-
-.legend-box {
-    -fx-background-color: rgba(18, 24, 43, 0.6);
-    -fx-border-color: rgba(115, 222, 255, 0.3);
-    -fx-border-width: 1px 0 0 0;
-}
-
-.calendar-scroll-pane {
-    -fx-background-color: transparent;
-    -fx-background: transparent;
-}
-
-.calendar-scroll-pane > .viewport {
-    -fx-background-color: transparent;
-}
-
-/* --- ANNOUNCEMENTS --- */
-.announcement-root {
-    -fx-background-color: #050816;
-}
-
-.announcement-title {
-    -fx-text-fill: white;
-    -fx-font-size: 32px;
-    -fx-font-weight: bold;
-    -fx-font-family: 'Arial', sans-serif;
-}
-
-.card-body {
-    -fx-background-color: #12182B;
-    -fx-background-radius: 20px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 15, 0, 0, 4);
-}
-
-.card-title {
-    -fx-text-fill: white;
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
-    -fx-font-family: 'Arial', sans-serif;
-}
-
-.card-desc {
-    -fx-text-fill: #94a3b8;
-    -fx-font-size: 12px;
-    -fx-font-family: 'Arial', sans-serif;
-    -fx-line-spacing: 2px;
-}
-
-.card-image-container {
-    -fx-background-color: #1e293b;
-    -fx-background-radius: 12px;
-}
-
-/* --- SCROLL PANES --- */
-.custom-scroll-pane > .viewport {
-    -fx-background-color: transparent;
-}
-
-.custom-scroll-pane {
-    -fx-background-color: transparent;
-    -fx-background: transparent;
-    -fx-border-width: 0;
-}
-
-.custom-scroll-pane .scroll-bar:vertical {
-    -fx-background-color: transparent;
-    -fx-pref-width: 10;
-}
-
-.custom-scroll-pane .scroll-bar:vertical .thumb {
-    -fx-background-color: rgba(255, 255, 255, 0.2);
-    -fx-background-radius: 5em;
-}
-
-.custom-scroll-pane .scroll-bar:vertical .thumb:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.4);
-}
-
-/* --- MISC --- */
-.thin-rectangle {
-    -fx-fill: linear-gradient(to right, transparent, #6683b8, #abc3ef, #6683b8, transparent);
-}
-
 .image-with-shadow {
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 30, 0.15, 0, 0);
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 30, 0.15, 0, 0);
 }
-
+.main-login-btn {
+  -fx-background-color: transparent;
+  -fx-border-color: linear-gradient(from 0% 0% to 100% 100%, #73deff, #4973f1);
+  -fx-border-radius: 25px;
+  -fx-text-fill: linear-gradient(from 0% 0% to 100% 100%, #73deff, #4973f1);
+  -fx-font-size: 12px;
+  -fx-font-weight: bold;
+  -fx-padding: 3 5 3 5;
+  -fx-cursor: hand;
+  -fx-pref-width: 60px;
+  -fx-pref-height: 1px;
+}
+.main-btns {
+  -fx-background-color: transparent;
+  -fx-border-color: transparent transparent transparent transparent;
+  -fx-text-fill: #c4d0e6;
+  -fx-font-size: 12px;
+  -fx-font-weight: bold;
+  -fx-padding: 3 5 3 5;
+  -fx-cursor: hand;
+  -fx-pref-width: 60px;
+  -fx-pref-height: 1px;
+}
 .sparkle {
-    -fx-fill: white;
-    -fx-effect: dropshadow(gaussian, #a8eaff, 10, 0.8, 0, 0);
+  -fx-fill: white;
+  -fx-effect: dropshadow(gaussian, #a8eaff, 10, 0.8, 0, 0);
+}
+.welcome-text {
+  -fx-font-family: "Arial";
+  -fx-font-size: 40px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #c4d0e6;
+  -fx-effect: dropshadow(gaussian, #1d223a, 10, 0.2, 0, 0);
+}
+.thin-rectangle {
+   -fx-fill: linear-gradient(to right, transparent, #6683b8, #abc3ef, #6683b8, transparent);
+}
+.abbriev-text {
+  -fx-font-family: "Arial";
+  -fx-font-size: 20px;
+  -fx-text-fill: #c4d0e6;
+  /*-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 10, 0.5, 2, 2);*/
+}
+/* Title Text - Large and Bold */
+.title-text {
+  -fx-font-family: "Arial";
+  -fx-font-size: 33px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #c4d0e6;
+  /*-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 10, 0.5, 2, 2);*/
+}
+.normal-login-text {
+  -fx-font-family: "Arial";
+  -fx-font-size: 12px;
+  -fx-text-fill: #c4d0e6;
+  /*-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 10, 0.5, 2, 2);*/
+}
+.error-text {
+  -fx-font-family: "Arial";
+  -fx-font-size: 12px;
+  -fx-text-fill: #a63c2e;
+  /*-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 10, 0.5, 2, 2);*/
+}
+.transparent-field {
+  -fx-background-color: transparent;
+  -fx-border-color: transparent transparent #5d6378 transparent;
+  -fx-border-width: 0.5px;
+  -fx-padding: 0 0 1px 0;
+  -fx-font-family: "Arial";
+  -fx-font-size: 14px;
+  -fx-text-fill: white;
+  -fx-pref-width: 280px;  
+  -fx-pref-height: 50px;
+}
+.transparent-field:focused {
+  -fx-border-color: transparent transparent #c2dfe8 transparent;
+  -fx-border-width: 0.5px;
+  -fx-effect: dropshadow(gaussian, #c2dfe8, 1, 0.5, 0, 0);
+}
+.diagonal-gradient-btn {
+  -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #73deff, #4973f1);
+  -fx-text-fill: #1d223a;
+  -fx-font-weight: bold;
+  -fx-font-size: 17px;
+  -fx-background-radius: 5px;
+  -fx-border-radius: 2px;
+  -fx-padding: 2 3 2 3;
+  -fx-pref-width: 95px;
+  -fx-pref-height: 15px;
+ 	-fx-cursor: hand;
+}
+.hyperlink-btn {
+  -fx-background-color: transparent;
+  -fx-border-color: transparent transparent transparent transparent;
+  -fx-text-fill: #73deff;
+	-fx-underline: true;
+  -fx-font-size: 12px;
+  -fx-padding: 1 3 1 3;
+  -fx-cursor: hand;
+}
+.transparent-close-btn {
+  -fx-background-color: transparent;
+  -fx-text-fill: white;
+  -fx-font-size: 18px;
+  -fx-font-weight: bold;
+  -fx-border-width: 0;
+  -fx-padding: 5px;
+  -fx-cursor: hand;
+}
+.transparent-close-btn:hover {
+  -fx-background-color: rgba(255, 255, 255, 0.1);
+  -fx-background-radius: 15px;
+}
+.radio-button .dot {
+  -fx-mark-highlight-color: #73deff;
+  -fx-mark-color: #73deff;
+  -fx-padding: 2px;
+}
+.combo-box .list-cell {
+  -fx-background-color: #1d223a;
+  -fx-text-fill: white;
+  -fx-pref-width: 262px;
+}
+.combo-box .list-view {
+  -fx-background-color: #1d223a;
+}
+.combo-box:disabled {
+  -fx-opacity: 0.5;
+}
+.combo-box .arrow-button {
+  -fx-background-color: #c4d0e6;
+}
+.combo-box .arrow {
+  -fx-background-color: #1d223a;
+}
+.close-button {
+  -fx-background-color: rgba(255, 255, 255, 0.1);
+  -fx-text-fill: #ffffff;
+  -fx-font-size: 12px;
+  -fx-font-weight: bold;
+  -fx-border-radius: 100px;
+  -fx-background-radius: 100px;
+  -fx-pref-width: 30px;
+  -fx-pref-height: 30px;
+  -fx-cursor: hand;
+}
+.close-button:hover {
+  -fx-background-color: rgba(255, 255, 255, 0.2);
+  -fx-text-fill: #73deff;
+}
+.close-button:pressed {
+  -fx-background-color: rgba(255, 68, 68, 0.3);
+}
+/* =============================================================================
+ 1. BACKGROUND (Deep Blue Gradient)
+ ============================================================================= */
+.root {
+  -fx-background-color: #050b14;
+  /* Creates the subtle blue blurred blobs in the background */
+  -fx-background-image:
+      radial-gradient(focus-angle 0deg, focus-distance 0%, center 25% 25%, radius 50%, rgba(30, 60, 160, 0.3), transparent),
+      radial-gradient(focus-angle 0deg, focus-distance 0%, center 75% 75%, radius 40%, rgba(70, 140, 250, 0.2), transparent);
+}
+/* =============================================================================
+ 2. TYPOGRAPHY (Big, Bold, and Bright)
+ ============================================================================= */
+/* The top line: "Hello, Student Name" (Label) */
+.title-textt {
+  -fx-font-family: "Arial", sans-serif;
+  -fx-font-size: 72px; /* Dramatically increased size */
+  -fx-font-weight: bold;
+  -fx-text-fill: white; /* Pure white for maximum contrast */
+  /* Stronger drop shadow for pop */
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 15, 0, 0, 5);
+  -fx-padding: 0 0 -15 0; /* Bring the lines closer together */
+}
+/* The second line parts: "Let's plan together" (Text objects) */
+.title-text-flow {
+  -fx-font-family: "Arial", sans-serif;
+  -fx-font-size: 72px; /* Matches title size */
+  -fx-font-weight: bold;
+  -fx-fill: white; /* Important: Text nodes use -fx-fill */
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 15, 0, 0, 5);
+}
+/* The specific word "plan" - Bright Blue Highlight */
+.highlightt-textt {
+	-fx-font-family: "Arial";
+	-fx-font-style: oblique 20deg; /* CSS Fonts Module Level 4 */
+	-fx-font-size: 72px; /* Matches title size */
+  -fx-fill: #5E9EFF; /* Bright electric blue */
+}
+/* The subtitle paragraph */
+.subtitle-text {
+  -fx-font-family: "Arial", sans-serif;
+  -fx-font-size: 18px; /* Increased for readability */
+  -fx-text-fill: #b0b0b0; /* Light grey */
+  -fx-text-alignment: center;
+  -fx-padding: 25 0 0 0; /* Space between title and subtitle */
+}
+/* =============================================================================
+ 3. BUTTONS (Pill Shape)
+ ============================================================================= */
+/* Common style for Announcements and Logout buttons */
+.announcements-button, .image-button {
+  -fx-background-color: transparent;
+  -fx-border-color: transparent;
+  -fx-border-radius: 30px; /* Creates the pill shape */
+  -fx-border-width: 2px;
+   -fx-text-fill: white;
+  -fx-font-family: "Arial", sans-serif;
+  -fx-font-weight: bold;
+  -fx-font-size: 16px;
+   -fx-padding: 10px 30px;
+  -fx-cursor: hand;
+  -fx-alignment: center;
+}
+/* Hover Effect: Blue Glow */
+.announcements-button:hover, .image-button:hover {
+  -fx-border-color: #5E9EFF;
+  -fx-text-fill: #5E9EFF;
+  -fx-background-color: rgba(94, 158, 255, 0.1);
+  -fx-effect: dropshadow(gaussian, rgba(94, 158, 255, 0.5), 15, 0, 0, 0);
+}
+/* Pressed Effect */
+.announcements-button:pressed, .image-button:pressed {
+  -fx-background-color: rgba(94, 158, 255, 0.2);
+  -fx-scale-x: 0.98;
+  -fx-scale-y: 0.98;
+}
+.dashboard-root {
+  -fx-background-color: #050816; /* Deep Dark Blue Solid */
+  -fx-border-color: transparent rgba(255, 255, 255, 0.1) transparent transparent;
+  -fx-border-width: 1px;
+  -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 15, 0, 5, 0); /* Stronger shadow to separate from bg */
+}
+.user-name {
+  -fx-text-fill: white;
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+  -fx-font-family: 'Poppins', sans-serif;
+}
+.user-email {
+  -fx-text-fill: #94a3b8;
+  -fx-font-size: 14px;
+  -fx-font-style: italic;
+  -fx-font-family: 'Poppins', sans-serif;
+}
+.separator-line {
+  -fx-stroke: rgba(255, 255, 255, 0.1);
+}
+.menu-item {
+  -fx-background-color: transparent;
+  -fx-cursor: hand;
+  -fx-padding: 10px 0;
+}
+.menu-item:hover {
+  -fx-background-color: rgba(255, 255, 255, 0.05);
+  -fx-background-radius: 10px;
+}
+.menu-icon {
+  -fx-text-fill: white;
+  -fx-font-size: 20px;
+  -fx-font-weight: bold;
+  -fx-min-width: 30px;
+  -fx-alignment: center;
+}
+.menu-text {
+  -fx-text-fill: white;
+  -fx-font-size: 16px;
+  -fx-font-family: 'Poppins', sans-serif;
+  -fx-font-weight: 600;
+}
+.announcement-root {
+  -fx-background-color: #050816;
+}
+.announcement-title {
+  -fx-text-fill: white;
+  -fx-font-size: 32px;
+  -fx-font-weight: bold;
+  -fx-font-family: 'Poppins', sans-serif;
+}
+.close-button {
+  -fx-background-color: transparent;
+  -fx-text-fill: #94a3b8;
+  -fx-font-size: 14px;
+  -fx-cursor: hand;
+  -fx-border-color: #334155;
+  -fx-border-radius: 8px;
+  -fx-padding: 6px 16px;
+}
+.close-button:hover {
+  -fx-text-fill: white;
+  -fx-border-color: white;
+}
+.card-body {
+  -fx-background-color: #12182B;
+  -fx-background-radius: 20px;
+  -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 15, 0, 0, 4);
+}
+.card-title {
+  -fx-text-fill: white;
+  -fx-font-size: 18px;
+  -fx-font-weight: bold;
+  -fx-font-family: 'Poppins', sans-serif;
+}
+.card-desc {
+  -fx-text-fill: #94a3b8;
+  -fx-font-size: 12px;
+  -fx-font-family: 'Poppins', sans-serif;
+  -fx-line-spacing: 2px;
+}
+.card-image-container {
+  -fx-background-color: #1e293b;
+  -fx-background-radius: 12px;
+}
+.custom-scroll-pane > .viewport {
+  -fx-background-color: transparent;
+}
+.custom-scroll-pane {
+  -fx-background-color: transparent;
+  -fx-background: transparent;
+}
+/* =============================================================================
+ ENLISTMENT UI STYLES
+ ============================================================================= */
+/* Main container background */
+.enlistment-view {
+  -fx-background-color: #050b14;
+  -fx-background-image:
+      radial-gradient(focus-angle 0deg, focus-distance 0%, center 80% 20%, radius 40%, rgba(70, 140, 250, 0.1), transparent);
+}
+/* Labels (e.g., "Available Courses") */
+.section-label {
+  -fx-text-fill: #c4d0e6;
+  -fx-font-family: "Arial";
+  -fx-font-weight: bold;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 5, 0, 0, 1);
+}
+/* Search Field - Matching existing input styles */
+.search-field {
+  -fx-background-color: rgba(255, 255, 255, 0.05);
+  -fx-border-color: #5d6378;
+  -fx-border-width: 0 0 1px 0;
+  -fx-text-fill: white;
+  -fx-prompt-text-fill: #6c757d;
+  -fx-font-size: 14px;
+}
+.search-field:focused {
+  -fx-border-color: #73deff;
+  -fx-background-color: rgba(255, 255, 255, 0.1);
+}
+/* Search Button */
+.action-btn {
+  -fx-background-color: transparent;
+  -fx-border-color: #73deff;
+  -fx-border-radius: 20px;
+  -fx-text-fill: #73deff;
+  -fx-font-weight: bold;
+  -fx-cursor: hand;
+}
+.action-btn:hover {
+  -fx-background-color: rgba(115, 222, 255, 0.1);
+}
+/* =============================================================================
+ TABLE VIEW STYLING (Dark Theme)
+ ============================================================================= */
+.styled-table {
+  -fx-background-color: transparent;
+  -fx-base: #1d223a; /* Scrollbar base color */
+  -fx-border-color: rgba(255, 255, 255, 0.1);
+}
+.styled-table .column-header-background {
+  -fx-background-color: #1d223a;
+  -fx-border-color: transparent transparent rgba(255, 255, 255, 0.1) transparent;
+  -fx-border-width: 1px;
+}
+.styled-table .column-header, .styled-table .filler {
+  -fx-background-color: transparent;
+  -fx-size: 40px;
+}
+.styled-table .column-header .label {
+  -fx-text-fill: #73deff;
+  -fx-font-weight: bold;
+  -fx-alignment: center-left;
+}
+.styled-table .table-cell {
+  -fx-text-fill: #e6e6e6;
+  -fx-alignment: center-left;
+  -fx-padding: 0 0 0 10px;
+  -fx-border-color: transparent;
+}
+.styled-table .table-row-cell {
+  -fx-background-color: transparent;
+  -fx-border-color: transparent transparent rgba(255, 255, 255, 0.05) transparent;
+}
+.styled-table .table-row-cell:odd {
+  -fx-background-color: rgba(255, 255, 255, 0.02);
+}
+.styled-table .table-row-cell:hover {
+  -fx-background-color: rgba(115, 222, 255, 0.1);
+}
+.styled-table .table-row-cell:selected {
+  -fx-background-color: rgba(73, 115, 241, 0.3);
+}
+/* Remove default empty table text color */
+.styled-table .placeholder .label {
+  -fx-text-fill: #6c757d;
+}
+/* =============================================================================
+ CALENDAR VIEW STYLES
+ ============================================================================= */
+/* Main Background */
+.calendar-view {
+  -fx-background-color: #050b14;
+  -fx-background-image:
+      radial-gradient(focus-angle 0deg, focus-distance 0%, center 20% 80%, radius 40%, rgba(70, 140, 250, 0.15), transparent);
+}
+/* ScrollPane transparent background */
+.calendar-scroll-pane {
+  -fx-background: transparent;
+  -fx-background-color: transparent;
+}
+.calendar-scroll-pane > .viewport {
+  -fx-background-color: transparent;
+}
+/* Grid Header (Days) */
+.calendar-header-label {
+  -fx-background-color: rgba(29, 34, 58, 0.9);
+  -fx-text-fill: #73deff;
+  -fx-font-weight: bold;
+  -fx-font-family: "Arial";
+  -fx-font-size: 14px;
+  -fx-border-color: rgba(115, 222, 255, 0.3);
+  -fx-border-width: 0 0 2px 0;
+}
+/* Time Labels (Left Column) */
+.calendar-time-label {
+  -fx-background-color: rgba(5, 11, 20, 0.6);
+  -fx-text-fill: #94a3b8;
+  -fx-font-family: "Arial";
+  -fx-font-size: 11px;
+  -fx-border-color: rgba(255, 255, 255, 0.1);
+  -fx-border-width: 0 1px 1px 0;
+}
+/* Empty Time Slots */
+.calendar-empty-cell {
+  -fx-background-color: transparent;
+  -fx-border-color: rgba(255, 255, 255, 0.05);
+  -fx-border-width: 0.5px;
+}
+.calendar-empty-cell:hover {
+  -fx-background-color: rgba(255, 255, 255, 0.02);
+}
+/* Course Blocks (Base Style) */
+.course-card {
+  -fx-background-radius: 6px;
+  -fx-border-radius: 6px;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0, 0, 2);
+  -fx-cursor: hand;
+}
+/* Title text inside course card */
+.course-card-title {
+  -fx-font-family: "Arial";
+  -fx-font-weight: bold;
+  -fx-font-size: 13px;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 2, 0, 0, 0);
+}
+/* Legend Box at bottom */
+.legend-box {
+  -fx-background-color: rgba(29, 34, 58, 0.95);
+  -fx-border-color: rgba(255, 255, 255, 0.1);
+  -fx-border-width: 1px 0 0 0;
+}
+/* Custom Alert Styling */
+/* Custom Alert Styling */
+/* --- CUSTOM ALERT POPUP STYLES --- */
+/* 1. The Main Container */
+.custom-alert {
+   -fx-background-color: #050816;
+   -fx-border-color: #4a6fa5;
+   -fx-border-width: 2px;
+   -fx-padding: 20px; /* Padding around the whole dialog */
+}
+/* 2. The Message Text (Absolute Center) */
+.custom-alert > .content.label {
+   -fx-alignment: center;       /* Centers label in the available space */
+   -fx-text-alignment: center;  /* Centers text lines within the label */
+   -fx-text-fill: white;
+   -fx-font-size: 15px;
+   -fx-padding: 10px;
+   -fx-pref-width: 300px;       /* Ensures enough width for centering to look good */
+}
+/* 3. Hide the Button Bar (But keep it logically present for the Window 'X') */
+.custom-alert .button-bar {
+   -fx-pref-height: 0;
+   -fx-max-height: 0;
+   -fx-padding: 0;
+   -fx-opacity: 0;   /* Makes the buttons invisible */
+   -fx-scale-y: 0;   /* Ensures it takes up no vertical space */
+}
+/* 4. Button Styles (Even though hidden, good to keep if you ever unhide them) */
+.custom-alert .button-bar .button {
+   -fx-background-color: #3498db;
+   -fx-text-fill: white;
+   -fx-font-weight: bold;
+   -fx-background-radius: 5px;
+   -fx-cursor: hand;
+}
+.custom-alert .button-bar .button:hover {
+   -fx-background-color: #2980b9;
+}
+/* 5. Header Area (Only visible if you use setHeaderText("...")) */
+.custom-alert .header-panel {
+   -fx-background-color: #0d1b2a;
+}
+.custom-alert .header-panel .label {
+   -fx-text-fill: #3498db;
+   -fx-font-weight: bold;
+}
+/* 6. Icons (Dropshadow for better visibility on dark bg) */
+.custom-alert .graphic-container .image-view {
+   -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 5, 0, 0, 1);
 }
 
-.radio-button .dot {
-    -fx-mark-highlight-color: #73deff;
-    -fx-mark-color: #73deff;
-    -fx-padding: 2px;
-}
+
+

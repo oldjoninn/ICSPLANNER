@@ -4,6 +4,8 @@ import javafx.animation.TranslateTransition;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -25,6 +27,7 @@ import components.Course;
 import components.Student;
 import components.Save_Load;
 import application.Main;
+
 public class EnlistmentUI {
    private Main mainApp;
    private Stage primaryStage;
@@ -151,8 +154,7 @@ public class EnlistmentUI {
                                 showErrorPopup("Invalid Selection", "This course is not offered in your degree program.");
                                 return;
                             }
-                            // 2. CHECK DUPLICATE (Moved UP - This solves your issue!)
-                            // Check if already enrolled in ANY section of the same course code
+                          
                             boolean alreadyEnrolled = false;
                             for (Course enrolledCourse : student.getCoursesTaken()) {
                                 if (enrolledCourse.getCourseID().equals(selectedCourse.getCourseID())) {
@@ -161,21 +163,20 @@ public class EnlistmentUI {
                                 }
                             }
                             if (alreadyEnrolled) {
-                                showErrorPopup("Duplicate", "You are already enrolled in " + selectedCourse.getCourseID());
+                                showErrorPopup("Invalid Selection", "You are already enrolled in " + selectedCourse.getCourseID());
                                 return;
                             }
                            
                             String degreeName = student.getDegree().getName();
                            
                             if (degreeName.equals("BSCS")) {
-                                // FIX: Only enforce Lab requirement IF the course actually HAS labs
+                               
                                 if (courseHasLabs(selectedCourse.getCourseID())) {
                                     if (!isLabSection(selectedCourse.getSection())) {
-                                        showErrorPopup("Invalid Selection", "This course has a laboratory component.\nPlease select a Lab section (e.g., G-1L).");
+                                        showErrorPopup("Invalid Selection", "Please select a Lab section instead.");
                                         return;
                                     }
                                 }
-                                // If courseHasLabs is false (like CMSC 190), we allow adding the section directly.
                                
                             } else if (degreeName.equals("MSCS") || degreeName.equals("PHD")) {
                                 if (isLabSection(selectedCourse.getSection())) {
@@ -187,7 +188,7 @@ public class EnlistmentUI {
                                 boolean hasLabs = selectedCourse.getCourseID().equals("IT 210") || selectedCourse.getCourseID().equals("IT 238");
                                 if (hasLabs) {
                                     if (!isLabSection(selectedCourse.getSection())) {
-                                        showErrorPopup("Invalid Selection", "Please add a lab section instead");
+                                        showErrorPopup("Invalid Selection", "Please add a Lab section instead");
                                         return;
                                     }
                                 } else {
@@ -198,19 +199,22 @@ public class EnlistmentUI {
                                 }
                             }
                            
-                            // 4. CHECK TIME CONFLICT
+                          
                             CalendarView tempCalendar = new CalendarView(mainApp, student, primaryStage);
                             if (tempCalendar.hasTimeConflict(selectedCourse)) {
-                                showErrorPopup("Schedule Conflict", "This course conflicts with your existing schedule!");
+                                showErrorPopup("Schedule Conflict",
+                                    "Cannot add " + selectedCourse.getCourseID() + " " + selectedCourse.getSection() +
+                                    "\n\nThis course conflicts with your existing schedule!" +
+                                    "\nTime: " + selectedCourse.getTime() + " (" + selectedCourse.getDays() + ")" +
+                                    "\n\nPlease choose a different section or remove the conflicting course first.");
                                 return;
                             }
                            
-                            // --- PROCEED TO ADD ---
+                           
                             student.addCourse(selectedCourse);
                             plannedCourses.add(selectedCourse);
                             newlyAddedCourses.add(selectedCourse.getCourseID() + "-" + selectedCourse.getSection());
                            
-                            // Auto-add Lecture Logic
                             if (degreeName.equals("BSCS")|| (degreeName.equals("MIT") && isLabSection(selectedCourse.getSection()))){
                                 String lectureSection = getLectureSection(selectedCourse.getSection());
                                 Course lectureCourse = findLectureCourse(selectedCourse.getCourseID(), lectureSection);
@@ -239,10 +243,10 @@ public class EnlistmentUI {
            }
        });
        availableTable.getColumns().addAll(codeColumn, titleColumn, sectionColumn, timeColumn, dayColumn, roomColumn, addButtonColumn);
-       // --- ENLISTED COURSES SECTION ---
+      
        Label enlistedLabel = new Label("Enlisted Courses (" + plannedCourses.size() + " courses)");
        enlistedLabel.setLayoutX(20);
-       // Position below the first table with some padding
+     
        double enlistedY = 125 + (screenHeight * 0.40) + 20;
        enlistedLabel.setLayoutY(enlistedY);
        enlistedLabel.getStyleClass().add("section-label");
@@ -251,7 +255,7 @@ public class EnlistmentUI {
        plannedTable.setLayoutX(20);
        plannedTable.setLayoutY(enlistedY + 25);
      
-       // Dynamic Size: Width is screen width minus padding, Height fills rest of screen minus bottom margin
+      
        plannedTable.setPrefWidth(screenWidth - 40);
        plannedTable.setPrefHeight(screenHeight - (enlistedY + 100));
      
@@ -281,10 +285,10 @@ public class EnlistmentUI {
                        Course selectedCourse = getTableRow().getItem();
                        if (selectedCourse != null) {
                           
-                           // 1. Remove Selected
+                         
                            removeCourseFromList(selectedCourse);
                           
-                           // 2. Remove Paired Course
+                         
                            String currentID = selectedCourse.getCourseID();
                            String currentSection = selectedCourse.getSection();
                           
@@ -330,7 +334,7 @@ public class EnlistmentUI {
        });
        contentRoot.getChildren().addAll(menuBtn, viewCalendarButton, searchField, searchButton,
                availableLabel, availableTable, enlistedLabel, plannedTable);
-           // 4. Sidebar & Overlay Setup
+         
            overlay = new Pane();
            overlay.setPrefSize(screenWidth, screenHeight);
            overlay.setStyle("-fx-background-color: rgba(0,0,0,0.5);");
@@ -339,11 +343,11 @@ public class EnlistmentUI {
            Dashboard dashboard = new Dashboard(SIDEBAR_WIDTH, mainApp, primaryStage, student);
            dashboardPane = dashboard.getView();
            dashboardPane.setPrefHeight(screenHeight);
-           dashboardPane.setTranslateX(-SIDEBAR_WIDTH); // Initially hidden
-           // 5. Add layers to Main Root
+           dashboardPane.setTranslateX(-SIDEBAR_WIDTH);
+         
            mainRoot.getChildren().addAll(contentRoot, overlay, dashboardPane);
          
-           // Listeners for resizing
+         
            mainRoot.widthProperty().addListener((obs, oldVal, newVal) -> {
               overlay.setPrefWidth(newVal.doubleValue());
               contentRoot.setPrefWidth(newVal.doubleValue());
@@ -365,7 +369,7 @@ public class EnlistmentUI {
            return scene;
        }
  
-   // Extracted logic to keep UI code clean
+ 
   
    private void openSidebar() {
        if (!isSidebarOpen) {
@@ -516,6 +520,21 @@ public class EnlistmentUI {
        alert.setTitle(title);
        alert.setHeaderText(null);
        alert.setContentText(message);
+       alert.setGraphic(null);
+       // 1. CLEAR DEFAULT BUTTONS
+       alert.getButtonTypes().clear();
+      
+       // 2. ADD CLOSE BUTTON (Required for the Window 'X' to work)
+       // The CSS below will hide this button visually, but it enables the logic.
+       alert.getButtonTypes().add(ButtonType.CLOSE);
+       // 3. ALLOW CLICK ANYWHERE TO CLOSE
+       alert.getDialogPane().getScene().setOnMouseClicked(e -> alert.close());
+       DialogPane dialogPane = alert.getDialogPane();
+       try {
+           dialogPane.getStylesheets().add(getClass().getResource("/application/application.css").toExternalForm());
+       } catch (Exception e) {}
+      
+       dialogPane.getStyleClass().add("custom-alert");
        alert.showAndWait();
    }
    private void showInfoPopup(String title, String message) {
@@ -523,9 +542,20 @@ public class EnlistmentUI {
        alert.setTitle(title);
        alert.setHeaderText(null);
        alert.setContentText(message);
+       alert.setGraphic(null);
+       // 1. CLEAR & ADD CLOSE BUTTON TYPE
+       alert.getButtonTypes().clear();
+       alert.getButtonTypes().add(ButtonType.CLOSE); // Fixes the Window 'X'
+       // 2. ALLOW CLICK ANYWHERE TO CLOSE
+       alert.getDialogPane().getScene().setOnMouseClicked(e -> alert.close());
+       DialogPane dialogPane = alert.getDialogPane();
+       try {
+           dialogPane.getStylesheets().add(getClass().getResource("/application/application.css").toExternalForm());
+       } catch (Exception e) {}
+      
+       dialogPane.getStyleClass().add("custom-alert");
        alert.showAndWait();
-   }
-}
+   }}
 
 
 

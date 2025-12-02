@@ -27,6 +27,8 @@ public class AdminDashboard {
     private Main mainApp;
     private Map<String, Integer> enrollmentCounts;
     
+    
+    // Constructor
     public AdminDashboard(Stage primaryStage, List<Course> courses, Main mainApp) {
         this.stage = primaryStage;
         this.allCourses = (courses == null) ? new ArrayList<>() : courses;
@@ -34,15 +36,15 @@ public class AdminDashboard {
         this.mainApp = mainApp;
         
         System.out.println("AdminDashboard initialized with " + allCourses.size() + " courses");
-        calculateEnrollmentCounts();
+        calculateEnrollmentCounts(); // Pre-calculate enrollment counts
     }
-    
+    // Helper to create unique keys for course-section pairs
     private String keyFor(String courseID, String section) {
-        String id = (courseID == null || courseID.isEmpty()) ? "N/A" : courseID;
-        String sec = (section == null || section.isEmpty()) ? "N/A" : section;
+        String id = (courseID == null || courseID.isEmpty()) ? "N/A" : courseID; // Handle null or empty courseID
+        String sec = (section == null || section.isEmpty()) ? "N/A" : section;	// Handle null or empty section
         return id + "-" + sec;
     }
-    
+    // Calculate enrollment counts for each course section
     private void calculateEnrollmentCounts() {
         enrollmentCounts.clear();
         
@@ -53,19 +55,19 @@ public class AdminDashboard {
         }
         
         // Load all students and count enrollments
-        ArrayList<Student> allStudents = Save_Load.loadAllStudents();
-        if (allStudents == null) allStudents = new ArrayList<>();
+        ArrayList<Student> allStudents = Save_Load.loadAllStudents(); // Load all students from storage
+        if (allStudents == null) allStudents = new ArrayList<>(); // Handle null case
         
-        for (Student student : allStudents) {
-            for (Course enrolledCourse : student.getCoursesTaken()) {
-                String key = keyFor(enrolledCourse.getCourseID(), enrolledCourse.getSection());
-                enrollmentCounts.put(key, enrollmentCounts.getOrDefault(key, 0) + 1);
+        for (Student student : allStudents) { // Iterate through each student
+            for (Course enrolledCourse : student.getCoursesTaken()) { // Iterate through their enrolled courses
+                String key = keyFor(enrolledCourse.getCourseID(), enrolledCourse.getSection()); // Create key
+                enrollmentCounts.put(key, enrollmentCounts.getOrDefault(key, 0) + 1); // Increment count
             }
         }
         
         System.out.println("Enrollment counts: " + enrollmentCounts.size() + " sections");
     }
-    
+    // Data model for table rows
     public static class CourseRow {
         private String courseCode;
         private String title;
@@ -74,6 +76,8 @@ public class AdminDashboard {
         private String schedule;
         private String room;
         private String count;
+        
+        // Constructor
         
         public CourseRow(String courseCode, String title, String units, String section, 
                         String schedule, String room, String count) {
@@ -86,6 +90,7 @@ public class AdminDashboard {
             this.count = count;
         }
         
+        // Getters
         public String getCourseCode() { return courseCode; }
         public String getTitle() { return title; }
         public String getUnits() { return units; }
@@ -95,6 +100,7 @@ public class AdminDashboard {
         public String getCount() { return count; }
     }
     
+    // Show the dashboard
     public void show() {
         // Main container with modern dark gradient background
         BorderPane root = new BorderPane();
@@ -109,7 +115,7 @@ public class AdminDashboard {
         root.setCenter(centerContent);
         
         // Get screen dimensions for full screen
-        javafx.geometry.Rectangle2D screenBounds = javafx.stage.Screen.getPrimary().getVisualBounds();
+        javafx.geometry.Rectangle2D screenBounds = javafx.stage.Screen.getPrimary().getVisualBounds(); // Use visual bounds
         Scene scene = new Scene(root, screenBounds.getWidth(), screenBounds.getHeight());
         
         // Load CSS
@@ -120,13 +126,13 @@ public class AdminDashboard {
         } catch (Exception ex) {
             System.err.println("CSS file not found: " + ex.getMessage());
         }
-        
+        // Set up the stage
         stage.setScene(scene);
         stage.setTitle("REGICS - Admin Dashboard");
         stage.setMaximized(true);
         stage.show();
     }
-    
+    // Create the top bar with improved styling
     private HBox createTopBar() {
         HBox topBar = new HBox(15);
         topBar.setPadding(new Insets(25, 40, 25, 40));
@@ -182,14 +188,14 @@ public class AdminDashboard {
                 "-fx-border-width: 2px;"
             );
         });
-        
+        // Back button action
         backButton.setOnAction(e -> {
             // Navigate back to landing page
             if (mainApp != null) {
                 Pane mainRoot = new Pane();
-                // Prefer the current logged-in user; fall back to an Admin wrapper if none available
+                // Get current user from main app
                 components.User currentUser = mainApp.getCurrentUser();
-                if (currentUser == null) currentUser = new Admin();
+                if (currentUser == null) currentUser = new Admin(); // Fallback to Admin if null ( always true )
                 LandingPage landingPage = new LandingPage(mainApp, currentUser);
                 landingPage.displayLandingPage(mainRoot, stage);
                 
@@ -268,6 +274,7 @@ public class AdminDashboard {
         return topBar;
     }
     
+    // Create center content with improved styling
     private VBox createCenterContent() {
         VBox centerContent = new VBox(20);
         centerContent.setPadding(new Insets(30, 40, 40, 40));
@@ -306,7 +313,7 @@ public class AdminDashboard {
         centerContent.getChildren().addAll(semesterBox, statsCard, courseTable);
         return centerContent;
     }
-    
+    // Create stats card with improved styling
     private HBox createStatsCard() {
         HBox statsCard = new HBox(40);
         statsCard.setPadding(new Insets(20));
@@ -335,7 +342,7 @@ public class AdminDashboard {
         statsCard.getChildren().addAll(coursesBox, enrollmentsBox, avgBox);
         return statsCard;
     }
-    
+    // Create individual stat box with improved styling
     private VBox createStatBox(String label, String value, String color, String icon) {
         VBox box = new VBox(5);
         box.setAlignment(Pos.CENTER);
@@ -441,7 +448,7 @@ public class AdminDashboard {
                                 "-fx-alignment: center;" +
                                 "-fx-font-size: 13px;"
                             );
-                        } else if (count >= 10) {
+                        } else if (count >= 1) {
                             setStyle(
                                 "-fx-background-color: linear-gradient(to right, rgba(46, 204, 113, 0.2), rgba(46, 204, 113, 0.3));" +
                                 "-fx-text-fill: #2ecc71;" +

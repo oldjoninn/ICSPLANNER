@@ -440,7 +440,7 @@ public class AdminDashboard {
                                 "-fx-alignment: center;" +
                                 "-fx-font-size: 13px;"
                             );
-                        } else if (count >= 20) {
+                        } else if (count >= 20) { // count between 20 and 29
                             setStyle(
                                 "-fx-background-color: linear-gradient(to right, rgba(243, 156, 18, 0.2), rgba(243, 156, 18, 0.3));" +
                                 "-fx-text-fill: #f39c12;" +
@@ -448,7 +448,7 @@ public class AdminDashboard {
                                 "-fx-alignment: center;" +
                                 "-fx-font-size: 13px;"
                             );
-                        } else if (count >= 1) {
+                        } else if (count >= 1) { // count between 1 and 19
                             setStyle(
                                 "-fx-background-color: linear-gradient(to right, rgba(46, 204, 113, 0.2), rgba(46, 204, 113, 0.3));" +
                                 "-fx-text-fill: #2ecc71;" +
@@ -456,7 +456,7 @@ public class AdminDashboard {
                                 "-fx-alignment: center;" +
                                 "-fx-font-size: 13px;"
                             );
-                        } else {
+                        } else { // count == 0
                             setStyle(
                                 "-fx-text-fill: #94a3b8;" +
                                 "-fx-alignment: center;" +
@@ -475,7 +475,7 @@ public class AdminDashboard {
         
         return table;
     }
-    
+    // Style individual table columns
     private void styleColumn(TableColumn<CourseRow, String> column) {
         column.setStyle(
             "-fx-background-color: rgba(30, 41, 59, 0.5);" +
@@ -485,29 +485,29 @@ public class AdminDashboard {
             "-fx-font-weight: 600;"
         );
     }
-    
+    // Load course data into the table
     private void loadCourseData() {
         ObservableList<CourseRow> data = FXCollections.observableArrayList();
         
-        System.out.println("Loading " + allCourses.size() + " courses into table...");
+        System.out.println("Loading " + allCourses.size() + " courses into table..."); // Debug
         
-        for (Course course : allCourses) {
+        for (Course course : allCourses) { // Iterate through each course
             String key = keyFor(course.getCourseID(), course.getSection());
-            int enrolledCount = enrollmentCounts.getOrDefault(key, 0);
+            int enrolledCount = enrollmentCounts.getOrDefault(key, 0); // Get pre-calculated count
             
-            String schedule = "";
-            if (course.getDays() != null && !course.getDays().isEmpty()) {
-                schedule = course.getDays();
+            String schedule = ""; // Construct schedule string
+            if (course.getDays() != null && !course.getDays().isEmpty()) { // Both days and time available
+                schedule = course.getDays(); 
                 if (course.getTime() != null && !course.getTime().isEmpty()) {
                     schedule += " " + course.getTime();
                 }
             } else if (course.getTime() != null && !course.getTime().isEmpty()) {
-                schedule = course.getTime();
+                schedule = course.getTime(); // Only time available
             } else {
-                schedule = "TBA";
+                schedule = "TBA"; /// Neither available
             }
             
-            CourseRow row = new CourseRow(
+            CourseRow row = new CourseRow( // Create a new row
                 course.getCourseID() != null ? course.getCourseID() : "N/A",
                 course.getTitle() != null ? course.getTitle() : "N/A",
                 course.getUnits() != null ? course.getUnits() : "0",
